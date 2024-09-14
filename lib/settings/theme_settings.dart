@@ -12,7 +12,7 @@ class ThemeSettings {
   static ThemeData darkTheme(){
     final theme = ThemeData.dark();
     return theme.copyWith(
-      scaffoldBackgroundColor: Colors.grey,
+      scaffoldBackgroundColor: const Color.fromARGB(255, 46, 46, 46),
     );
   }
 
