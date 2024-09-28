@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_2/screens/home_screed.dart';
 import 'package:flutter_application_2/screens/login_screen.dart';
+import 'package:flutter_application_2/screens/movies_screen.dart';
 import 'package:flutter_application_2/screens/personajes_screen.dart';
 import 'package:flutter_application_2/settings/global_values.dart';
 import 'package:flutter_application_2/settings/theme_settings.dart';
@@ -25,7 +26,8 @@ class MyApp extends StatelessWidget {
           home: LoginScreen(),
           routes: {
             "/home" : (context) => HomeScreen(),
-            "/personajes" : (context) => PersonajesScreen()
+            "/personajes" : (context) => PersonajesScreen(),
+            "/movies" : (context) => MoviesScreen()
           },
         );
       }

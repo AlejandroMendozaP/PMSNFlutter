@@ -39,7 +39,8 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       }),
       //endDrawer: const Drawer(),
-      drawer: Drawer(
+      drawer: myDrawer(),
+      /*drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
@@ -57,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-      ),
+      ),*/
       bottomNavigationBar: ConvexAppBar(
         items: const [
           TabItem(icon: Icons.home, title: 'Home'),
@@ -74,11 +75,13 @@ class _HomeScreenState extends State<HomeScreen> {
         type: ExpandableFabType.up,
         children: [
           FloatingActionButton.small(
+              heroTag: "btn1",
               onPressed: () {
                 GlobalValues.banThemeDark.value = false;
               },
               child: const Icon(Icons.light_mode)),
           FloatingActionButton.small(
+            heroTag: "btn2",
               onPressed: () {
                 GlobalValues.banThemeDark.value = true;
               },
@@ -87,4 +90,36 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  Widget myDrawer(){
+    return Drawer(
+      child: ListView(
+        children: [
+          const UserAccountsDrawerHeader(
+            currentAccountPicture: CircleAvatar(
+              backgroundImage: NetworkImage('https://i.pravatar.cc/300'),
+            ),
+            accountName: Text('Alejandro'), 
+            accountEmail: Text('20030741@itcelaya.edu.mx')
+            ),
+          ListTile(
+            onTap: () => Navigator.pushNamed(context, "/movies"),
+            title: const Text('MovieScreen'),
+            subtitle: const Text('Database'),
+            leading: const Icon(Icons.movie),
+            trailing: const Icon(Icons.chevron_right),
+            
+          ),
+          ListTile(
+            onTap: () => Navigator.pushNamed(context, "/personajes"),
+            title: const Text('Personajes'),
+            subtitle: const Text('spiderman'),
+            leading: const Icon(Icons.person),
+            trailing: const Icon(Icons.chevron_right),
+          ),
+        ]
+        ),
+    );
+  }
+
 }

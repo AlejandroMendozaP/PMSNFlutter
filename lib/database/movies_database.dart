@@ -26,13 +26,14 @@ class MoviesDatabase {
       path,
       version: VERSIONDB,
       onCreate: (db, version){
-        String query = '''
+        String query1 = '''
           CREATE TABLE tblgenre(
             idGenre char(1) PRIMARY KEY,
             dscgenre VARCHAR(50)
-          );
+          );''';
+        db.execute(query1);
 
-          CREATE TABLE tblmovies(
+        String query2 = '''CREATE TABLE tblmovies(
             idMovie INTEGER PRIMARY KEY,
             nameMovie VARCHAR(100),
             overview TEXT,
@@ -41,7 +42,7 @@ class MoviesDatabase {
             releaseDate CHAR(10),
             CONSTRAINT fk_gen FOREIGN KEY(idGenre) REFERENCES tblgenre(idGenre)
           );''';
-          db.execute(query);
+        db.execute(query2);
       },
     );
   } //initdatabase
