@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_2/screens/profile_screen.dart';
 import 'package:flutter_application_2/settings/colors_settings.dart';
 import 'package:flutter_application_2/settings/global_values.dart';
+import 'package:flutter_application_2/settings/theme_settings.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -32,8 +33,16 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Builder(builder: (context) {
         switch (index) {
+          case 0:
+            return const Center(
+              child: Text('Home Screen'),
+            );
           case 1:
             return const ProfileScreen();
+          case 2:
+            return const Center(
+              child: Text('Exit Screen'),
+            );
           default:
             return const ProfileScreen();
         }
@@ -77,13 +86,14 @@ class _HomeScreenState extends State<HomeScreen> {
           FloatingActionButton.small(
               heroTag: "btn1",
               onPressed: () {
-                GlobalValues.banThemeDark.value = false;
+                GlobalValues.selectedTheme.value="Light";
               },
               child: const Icon(Icons.light_mode)),
           FloatingActionButton.small(
             heroTag: "btn2",
               onPressed: () {
-                GlobalValues.banThemeDark.value = true;
+                GlobalValues.selectedTheme.value="Dark";
+                //GlobalValues.banThemeDark.value = true;
               },
               child: const Icon(Icons.dark_mode))
         ],
@@ -108,7 +118,6 @@ class _HomeScreenState extends State<HomeScreen> {
             subtitle: const Text('Database'),
             leading: const Icon(Icons.movie),
             trailing: const Icon(Icons.chevron_right),
-            
           ),
           ListTile(
             onTap: () => Navigator.pushNamed(context, "/personajes"),
