@@ -26,9 +26,9 @@ class ThemeSettings {
       primaryColor: Colors.teal, // Cambia el color principal
       appBarTheme: AppBarTheme(
         color: Colors.teal.shade700, // Color de la AppBar
-        iconTheme: IconThemeData(color: Colors.white), // Color de los iconos en la AppBar
+        iconTheme: const IconThemeData(color: Colors.white), // Color de los iconos en la AppBar
       ),
-      buttonTheme: ButtonThemeData(
+      buttonTheme: const ButtonThemeData(
         buttonColor: Colors.teal, // Color de los botones
         textTheme: ButtonTextTheme.primary, // Texto en los botones
       ),
