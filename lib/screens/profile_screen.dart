@@ -41,7 +41,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (_phoneController.text.isNotEmpty) filledFields++;
     if (_githubController.text.isNotEmpty) filledFields++;
     if (_imageFile != null) filledFields++;
-    if (_hobbies.isNotEmpty) filledFields++; // Considerar hobbies como completado
+    if (_hobbies.isNotEmpty)
+      filledFields++; // Considerar hobbies como completado
 
     setState(() {
       _completionLevel = filledFields / 6; // Actualizado a 6 campos
@@ -67,7 +68,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _launchInBrowserView(String username) async {
     final trimmedUsername = username.trim();
-    
+
     var httpsUri = Uri(
       scheme: 'https',
       host: 'github.com',
@@ -107,20 +108,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
-            onPressed: (){
-              WoltModalSheet.show(
-                context: context,
-                pageListBuilder: (context) => [
-                  WoltModalSheetPage(
-                    child: ThemeSettingsModal()
-                    )
-                ],
-              );
+              onPressed: () {
+                WoltModalSheet.show(
+                  context: context,
+                  pageListBuilder: (context) =>
+                      [WoltModalSheetPage(child: ThemeSettingsModal())],
+                );
+              },
+              icon: const Icon(Icons.settings)),
+          IconButton(
+            onPressed: () {
+              Navigator.pushReplacementNamed(context, '/login');
             },
-            icon: const Icon (Icons.settings)
-            )
+            icon: const Icon(Icons.logout), // Ícono para cerrar sesión
+          ),
         ],
-        ),
+      ),
       //backgroundColor: Colors.grey[100],
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -134,7 +137,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   Text(
                     'Perfil Completado: ${(_completionLevel * 100).toInt()}%',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 10),
                   ClipRRect(
@@ -162,8 +166,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   },
                   child: CircleAvatar(
                     radius: 60,
-                    backgroundImage: _imageFile != null ? FileImage(File(_imageFile!.path)) : null,
-                    child: _imageFile == null ? const Icon(Icons.camera_alt, size: 50, color: Colors.grey) : null,
+                    backgroundImage: _imageFile != null
+                        ? FileImage(File(_imageFile!.path))
+                        : null,
+                    child: _imageFile == null
+                        ? const Icon(Icons.camera_alt,
+                            size: 50, color: Colors.grey)
+                        : null,
                     backgroundColor: Colors.white,
                   ),
                 ),
@@ -227,7 +236,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   Text(
                     'Intereses/Hobbies',
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 10),
                   Wrap(
@@ -237,13 +247,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       return Chip(
                         label: Text(hobby),
                         backgroundColor: Colors.blue.withOpacity(0.2),
-                        deleteIcon: _isEditing ? Icon(Icons.close, color: Colors.red) : null,
-                        onDeleted: _isEditing ? () {
-                          setState(() {
-                            _hobbies.remove(hobby);
-                            _updateCompletionLevel();
-                          });
-                        } : null,
+                        deleteIcon: _isEditing
+                            ? Icon(Icons.close, color: Colors.red)
+                            : null,
+                        onDeleted: _isEditing
+                            ? () {
+                                setState(() {
+                                  _hobbies.remove(hobby);
+                                  _updateCompletionLevel();
+                                });
+                              }
+                            : null,
                       );
                     }).toList(),
                   ),
@@ -299,10 +313,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   labelText: label,
                   border: InputBorder.none,
                 ),
-                keyboardType: isEmail ? TextInputType.emailAddress : isPhone ? TextInputType.phone : TextInputType.text,
+                keyboardType: isEmail
+                    ? TextInputType.emailAddress
+                    : isPhone
+                        ? TextInputType.phone
+                        : TextInputType.text,
                 onChanged: (_) => _updateCompletionLevel(),
               )
-            : Text(controller.text.isNotEmpty ? controller.text : 'Agregar $label'),
+            : Text(controller.text.isNotEmpty
+                ? controller.text
+                : 'Agregar $label'),
         onTap: isEditing ? null : onTap,
       ),
     );

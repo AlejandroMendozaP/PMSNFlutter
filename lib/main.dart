@@ -44,6 +44,7 @@ class MyApp extends StatelessWidget {
                 "/personajes": (context) => const PersonajesScreen(),
                 "/movies": (context) => const MoviesScreen(),
                 "/onboarding": (context) => const OnboardingScreen(),
+                "/login": (context) => const LoginScreen(),
               },
             );
           },
