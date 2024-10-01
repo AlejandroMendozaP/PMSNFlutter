@@ -83,7 +83,7 @@ class _MovieVewState extends State<MovieView> {
           "releaseDate" : conRelease.text
         }).then((value){
           if(value>0){
-            GlobalValues.banUpdateListMovies.value= !GlobalValues.banThemeDark.value;
+            GlobalValues.banUpdateListMovies.value= !GlobalValues.banUpdateListMovies.value;
             return QuickAlert.show(
               context: context,
               type: QuickAlertType.success,

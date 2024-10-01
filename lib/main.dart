@@ -6,8 +6,22 @@ import 'package:flutter_application_2/screens/onboarding_screen.dart';
 import 'package:flutter_application_2/screens/personajes_screen.dart';
 import 'package:flutter_application_2/settings/global_values.dart';
 import 'package:flutter_application_2/settings/theme_settings.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() => runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Cargamos las preferencias guardadas
+  final prefs = await SharedPreferences.getInstance();
+  final selectedTheme = prefs.getString('selectedTheme') ?? 'Light';
+  final selectedFont = prefs.getString('selectedFontFamily') ?? 'Roboto';
+
+  // Actualizamos los GlobalValues con los valores almacenados
+  GlobalValues.selectedTheme.value = selectedTheme;
+  GlobalValues.selectedFontFamily.value = selectedFont;
+
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -15,7 +29,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-      //valueListenable: GlobalValues.banThemeDark,
       valueListenable: GlobalValues.selectedTheme,
       builder: (context, _, __) {
         return ValueListenableBuilder(
@@ -24,11 +37,8 @@ class MyApp extends StatelessWidget {
             return MaterialApp(
               title: 'Material App',
               theme: _getCurrentTheme(context),
-              /*theme: GlobalValues.banThemeDark.value
-                  ? ThemeSettings.darkTheme(context, fontFamily)
-                  : ThemeSettings.lightTheme(context, fontFamily),*/
               debugShowCheckedModeBanner: false,
-              home: const LoginScreen(),
+              home: const LoginScreen(), // Cambia a la pantalla deseada
               routes: {
                 "/home": (context) => const HomeScreen(),
                 "/personajes": (context) => const PersonajesScreen(),
@@ -50,9 +60,8 @@ class MyApp extends StatelessWidget {
       return ThemeSettings.lightTheme(context, fontFamily);
     } else if (selectedTheme == 'Dark') {
       return ThemeSettings.darkTheme(context, fontFamily);
-    } else {  // Si es personalizado
+    } else {
       return ThemeSettings.personalizedTheme(context, fontFamily);
     }
   }
-
 }

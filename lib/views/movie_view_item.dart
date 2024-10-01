@@ -67,7 +67,7 @@ class _MovieViewItemState extends State<MovieViewItem> {
               onPressed: (){
                 moviesDatabase!.DELETE('tblmovies', widget.moviesDAO.idMovie!).then((value){
                   if(value>0){
-                    GlobalValues.banUpdateListMovies.value= !GlobalValues.banThemeDark.value;
+                    GlobalValues.banUpdateListMovies.value= !GlobalValues.banUpdateListMovies.value;
                     return QuickAlert.show(
                       context: context,
                       type: QuickAlertType.error,

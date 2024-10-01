@@ -1,10 +1,11 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
 import 'package:flutter_onboarding_slider/flutter_onboarding_slider.dart';
 import 'package:flutter_application_2/settings/global_values.dart';
 import 'package:flutter_application_2/settings/theme_settings.dart';
 import 'package:lottie/lottie.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OnboardingScreen extends StatefulWidget {
   final Color kDarkBlueColor = const Color(0xFF053149);
@@ -18,11 +19,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   String selectedTheme = 'Light';  // Tema seleccionado por defecto
   String selectedFont = 'Roboto';  // Fuente seleccionada por defecto
 
+  // Función para guardar las preferencias seleccionadas
+  Future<void> _savePreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('selectedTheme', selectedTheme);
+    await prefs.setString('selectedFontFamily', selectedFont);
+  }
+
   @override
   Widget build(BuildContext context) {
     return OnBoardingSlider(
       finishButtonText: 'Start',
       onFinish: () {
+        _savePreferences();  // Guardamos las preferencias seleccionadas
         Navigator.pushNamed(context, "/home");
       },
       finishButtonStyle: FinishButtonStyle(
@@ -32,17 +41,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         'Skip',
         style: TextStyle(
           fontSize: 16,
-          //color: widget.kDarkBlueColor,
           fontWeight: FontWeight.w600,
         ),
       ),
       trailingFunction: () {
+        _savePreferences();  // Guardamos las preferencias seleccionadas
         Navigator.pushNamed(context, "/home");
       },
       controllerColor: widget.kDarkBlueColor,
       totalPage: 3,
       headerBackgroundColor: const Color.fromARGB(0, 255, 255, 255),
-      //pageBackgroundColor: Colors.white,
       background: [
         Lottie.asset('assets/spider.json', height: 400),
         Lottie.asset('assets/theme.json', height: 400),
@@ -50,7 +58,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       ],
       speed: 1.8,
       pageBodies: [
-        // Página 1: Explicación del funcionamiento de la app
+        // Página 1
         Container(
           alignment: Alignment.bottomCenter,
           width: MediaQuery.of(context).size.width,
@@ -63,7 +71,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 'Bienvenido a la App',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  //color: widget.kDarkBlueColor,
                   fontSize: 24.0,
                   fontWeight: FontWeight.w600,
                 ),
@@ -73,14 +80,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 'Aquí te mostramos cómo usar nuestra aplicación.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  //color: Colors.black26,
                   fontSize: 18.0,
                 ),
               ),
             ],
           ),
         ),
-        // Página 2: Selección del tema y la fuente
+        // Página 2: Selección de tema y fuente
         Container(
           alignment: Alignment.bottomCenter,
           width: MediaQuery.of(context).size.width,
@@ -93,13 +99,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 'Es momento de configurar tu tema y fuente',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  //color: widget.kDarkBlueColor,
                   fontSize: 24.0,
                   fontWeight: FontWeight.w600,
                 ),
               ),
               const SizedBox(height: 20),
-              // Selector de tema
               DropdownButton<String>(
                 value: selectedTheme,
                 items: const [
@@ -119,12 +123,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 onChanged: (String? newValue) {
                   setState(() {
                     selectedTheme = newValue!;
-                    GlobalValues.selectedTheme.value = selectedTheme;  // Actualizamos el tema global
+                    GlobalValues.selectedTheme.value = selectedTheme;
                   });
                 },
               ),
               const SizedBox(height: 20),
-              // Selector de fuente
               DropdownButton<String>(
                 value: selectedFont,
                 items: const [
@@ -133,7 +136,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     child: Text('Roboto'),
                   ),
                   DropdownMenuItem(
-                    value: 'Segoe Ul',
+                    value: 'Segoe UI',
                     child: Text('Segoe UI'),
                   ),
                   DropdownMenuItem(
@@ -145,8 +148,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   setState(() {
                     selectedFont = newValue!;
                     GlobalValues.selectedFontFamily.value = selectedFont;
-                    //GlobalValues.banThemeDark.value = GlobalValues.banThemeDark.value;
-                    GlobalValues.selectedTheme.value = GlobalValues.selectedTheme.value;
                   });
                 },
               ),
@@ -155,14 +156,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 '¡Haz que la personalización sea de tu agrado!',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  //color: Colors.black26,
                   fontSize: 18.0,
                 ),
               ),
             ],
           ),
         ),
-        // Página 3: Pantalla adicional con botón para ir a /home
+        // Página 3
         Container(
           alignment: Alignment.bottomCenter,
           width: MediaQuery.of(context).size.width,
@@ -172,24 +172,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
               Text(
-                '¡Todo está listo para comenzar!',
+                '¡Listo! Ya puedes empezar a usar la app.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  //color: widget.kDarkBlueColor,
                   fontSize: 24.0,
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(height: 20),
-              const Text(
-                'Haz clic en el botón para comenzar a usar la app.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  //color: Colors.black26,
-                  fontSize: 18.0,
-                ),
-              ),
-              const SizedBox(height: 20),
             ],
           ),
         ),

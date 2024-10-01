@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_2/views/theme_settings_modal.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -100,7 +102,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      appBar: AppBar(
+        title: Text("Perfil"),
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            onPressed: (){
+              WoltModalSheet.show(
+                context: context,
+                pageListBuilder: (context) => [
+                  WoltModalSheetPage(
+                    child: ThemeSettingsModal()
+                    )
+                ],
+              );
+            },
+            icon: const Icon (Icons.settings)
+            )
+        ],
+        ),
+      //backgroundColor: Colors.grey[100],
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
