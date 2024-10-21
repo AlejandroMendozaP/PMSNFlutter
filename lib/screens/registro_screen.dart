@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class RegistroScreen extends StatefulWidget {
+  const RegistroScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegistroScreen> createState() => _RegistroScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegistroScreenState extends State<RegistroScreen> {
   final conUser = TextEditingController();
+  final conEmail = TextEditingController();
   final conPwd = TextEditingController();
   bool isLoading = false;
 
@@ -57,7 +58,16 @@ class _LoginScreenState extends State<LoginScreen> {
                             hintText: 'Usuario',
                           ),
                         ),
-                        const SizedBox(height: 16), // Espacio entre los campos
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          keyboardType: TextInputType.emailAddress,
+                          controller: conUser,
+                          decoration: const InputDecoration(
+                            prefixIcon: Icon(Icons.mail),
+                            hintText: 'Email',
+                          ),
+                        ),// Espacio entre los campos
+                        const SizedBox(height: 16), 
                         TextFormField(
                           keyboardType: TextInputType.text,
                           obscureText: true,
@@ -73,29 +83,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 // Botón de login
                 Positioned(
-                  bottom: constraints.maxHeight * 0.5, // Ajustar la posición
-                  child: SizedBox(
-                    width: constraints.maxWidth * 0.9,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(255, 133, 161, 240),
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          isLoading = true;
-                        });
-                        Future.delayed(const Duration(milliseconds: 4000)).then((value) {
-                          setState(() {
-                            isLoading = false;
-                          });
-                          Navigator.pushNamed(context, "/onboarding");
-                        });
-                      },
-                      child: const Text('Validar Usuario'),
-                    ),
-                  ),
-                ),
-                Positioned(
                   bottom: constraints.maxHeight * 0.1, // Ajustar la posición
                   child: SizedBox(
                     width: constraints.maxWidth * 0.9,
@@ -104,9 +91,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         backgroundColor: const Color.fromARGB(255, 133, 161, 240),
                       ),
                       onPressed: () {
-                        Navigator.pushNamed(context, "/registro");
+                        Navigator.pushNamed(context, "/login");
                       },
-                      child: const Text('Registrarse'),
+                      child: const Text('Registrar Usuario'),
                     ),
                   ),
                 ),

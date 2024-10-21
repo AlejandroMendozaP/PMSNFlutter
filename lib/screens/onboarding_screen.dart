@@ -66,7 +66,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           margin: const EdgeInsets.only(bottom: 250),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
+            children: const <Widget>[
               Text(
                 'Bienvenido a la App',
                 textAlign: TextAlign.center,
@@ -75,8 +75,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(height: 20),
-              const Text(
+              SizedBox(height: 20),
+              Text(
                 'Aquí te mostramos cómo usar nuestra aplicación.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
@@ -170,7 +170,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           margin: const EdgeInsets.only(bottom: 250),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
+            children: const <Widget>[
               Text(
                 '¡Listo! Ya puedes empezar a usar la app.',
                 textAlign: TextAlign.center,

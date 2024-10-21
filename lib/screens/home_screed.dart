@@ -1,10 +1,12 @@
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_2/provider/test_provider.dart';
 import 'package:flutter_application_2/screens/profile_screen.dart';
 import 'package:flutter_application_2/settings/colors_settings.dart';
 import 'package:flutter_application_2/settings/global_values.dart';
 import 'package:flutter_application_2/settings/theme_settings.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,6 +21,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    final testProvider = Provider.of<TestProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: ColorsSettings.navColor,
@@ -48,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       }),
       //endDrawer: const Drawer(),
-      drawer: myDrawer(),
+      drawer: myDrawer(testProvider),
       /*drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -101,15 +106,15 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget myDrawer(){
+  Widget myDrawer(TestProvider testProvider){
     return Drawer(
       child: ListView(
         children: [
-          const UserAccountsDrawerHeader(
-            currentAccountPicture: CircleAvatar(
+          UserAccountsDrawerHeader(
+            currentAccountPicture: const CircleAvatar(
               backgroundImage: NetworkImage('https://i.pravatar.cc/300'),
             ),
-            accountName: Text('Alejandro'), 
+            accountName: Text(testProvider.name),
             accountEmail: Text('20030741@itcelaya.edu.mx')
             ),
           ListTile(
@@ -124,6 +129,13 @@ class _HomeScreenState extends State<HomeScreen> {
             title: const Text('Personajes'),
             subtitle: const Text('spiderman'),
             leading: const Icon(Icons.person),
+            trailing: const Icon(Icons.chevron_right),
+          ),
+          ListTile(
+            onTap: () => Navigator.pushNamed(context, "/popularmovies"),
+            title: const Text('Popular Movies'),
+            subtitle: const Text('API'),
+            leading: const Icon(Icons.movie_rounded),
             trailing: const Icon(Icons.chevron_right),
           ),
         ]

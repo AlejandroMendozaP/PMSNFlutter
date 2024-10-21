@@ -120,7 +120,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onPressed: () {
               Navigator.pushReplacementNamed(context, '/login');
             },
-            icon: const Icon(Icons.logout), // Ícono para cerrar sesión
+            icon: const Icon(Icons.logout),
           ),
         ],
       ),

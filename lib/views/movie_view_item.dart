@@ -70,8 +70,8 @@ class _MovieViewItemState extends State<MovieViewItem> {
                     GlobalValues.banUpdateListMovies.value= !GlobalValues.banUpdateListMovies.value;
                     return QuickAlert.show(
                       context: context,
-                      type: QuickAlertType.error,
-                      text: 'Something was wrong :(',
+                      type: QuickAlertType.success,
+                      text: 'Ok ;)',
                       autoCloseDuration: const Duration(seconds: 2),
                       showConfirmBtn: false,
                     );

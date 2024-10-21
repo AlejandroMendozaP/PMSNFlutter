@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "56611133800",
+    "project_id": "moviles-b6e7f",
+    "storage_bucket": "moviles-b6e7f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:56611133800:android:6666b1569ad4692a129edd",
+        "android_client_info": {
+          "package_name": "com.pmsnflutter.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVr33KGGvJaQBj74hspLiDxmFSFV2nOoI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
