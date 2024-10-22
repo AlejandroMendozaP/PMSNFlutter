@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_2/firebase/email_auth.dart';
 
 class RegistroScreen extends StatefulWidget {
   const RegistroScreen({super.key});
@@ -8,6 +9,7 @@ class RegistroScreen extends StatefulWidget {
 }
 
 class _RegistroScreenState extends State<RegistroScreen> {
+  EmailAuth auth = EmailAuth();
   final conUser = TextEditingController();
   final conEmail = TextEditingController();
   final conPwd = TextEditingController();
@@ -91,7 +93,10 @@ class _RegistroScreenState extends State<RegistroScreen> {
                         backgroundColor: const Color.fromARGB(255, 133, 161, 240),
                       ),
                       onPressed: () {
-                        Navigator.pushNamed(context, "/login");
+                        auth.createUser(conEmail.text, conUser.text, conPwd.text).then((value) {
+                          setState(() {});
+                          Navigator.pushNamed(context, "/login");
+                        },);
                       },
                       child: const Text('Registrar Usuario'),
                     ),
