@@ -1,4 +1,4 @@
-class Sale {
+class SalesDAO {
   int? idSale;
   String title;
   String description;
@@ -6,7 +6,7 @@ class Sale {
   String status; 
   int categoryId;
 
-  Sale({
+  SalesDAO({
     this.idSale,
     required this.title,
     required this.description,
@@ -28,8 +28,8 @@ class Sale {
   }
 
   // Convertir un mapa en una instancia del modelo
-  factory Sale.fromMap(Map<String, dynamic> map) {
-    return Sale(
+  factory SalesDAO.fromMap(Map<String, dynamic> map) {
+    return SalesDAO(
       idSale: map['idSale'],
       title: map['title'],
       description: map['description'],

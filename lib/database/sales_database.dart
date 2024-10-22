@@ -2,6 +2,7 @@
 
 import 'dart:io';
 //import 'package:flutter_application_2/models/salesdao.dart'; // Deberás crear esta clase SalesDAO.
+import 'package:flutter_application_2/models/salesdao.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -83,6 +84,13 @@ class SalesDatabase {
   Future<int> DELETE(String table, String idColumn, int id) async {
     var con = await database;
     return await con.delete(table, where: '$idColumn = ?', whereArgs: [id]);
+  }
+
+  // Método para obtener todas las ventas
+  Future<List<SalesDAO>> SELECT_ALL_SALES() async {
+    var con = await database;
+    var result = await con.query('sales');
+    return result.map((sale) => SalesDAO.fromMap(sale)).toList();
   }
 
 }
