@@ -10,6 +10,7 @@ import 'package:flutter_application_2/screens/onboarding_screen.dart';
 import 'package:flutter_application_2/screens/personajes_screen.dart';
 import 'package:flutter_application_2/screens/popular_screen.dart';
 import 'package:flutter_application_2/screens/registro_screen.dart';
+import 'package:flutter_application_2/screens/sales_screen.dart';
 import 'package:flutter_application_2/settings/global_values.dart';
 import 'package:flutter_application_2/settings/theme_settings.dart';
 import 'package:provider/provider.dart';
@@ -58,6 +59,7 @@ class MyApp extends StatelessWidget {
                   "/popularmovies": (context) => const PopularScreen(),
                   "/detail" : (context) => const DetailPopularScreen(),
                   "/registro" : (context) => const RegistroScreen(),
+                  "/sales" : (context) => SalesScreen(),
                 },
               ),
             );

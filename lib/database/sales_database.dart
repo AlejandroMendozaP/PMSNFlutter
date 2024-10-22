@@ -28,45 +28,35 @@ class SalesDatabase {
       onCreate: (db, version) {
         String query1 = '''
           CREATE TABLE categories(
-            idCategory INTEGER PRIMARY KEY AUTOINCREMENT,
+            idCategory INTEGER PRIMARY KEY,
             nameCategory VARCHAR(50)
           );''';
         db.execute(query1);
 
-        String query2 = '''CREATE TABLE sales(
-            idSale INTEGER PRIMARY KEY AUTOINCREMENT,
-            title VARCHAR(100),
-            description TEXT,
-            date CHAR(10),
-            status VARCHAR(10),  -- 'pending', 'completed', 'cancelled'
+        String query2 = '''CREATE TABLE items(
+            idItem INTEGER PRIMARY KEY,
+            productName VARCHAR(100),
+            price REAL,
             categoryId INTEGER,
             CONSTRAINT fk_category FOREIGN KEY(categoryId) REFERENCES categories(idCategory)
           );''';
         db.execute(query2);
 
-        String query3 = '''CREATE TABLE items(
-            idItem INTEGER PRIMARY KEY AUTOINCREMENT,
-            saleId INTEGER,
-            productName VARCHAR(100),
-            quantity INTEGER,
-            price REAL,
-            CONSTRAINT fk_sale FOREIGN KEY(saleId) REFERENCES sales(idSale)
-          );''';
-        db.execute(query3);
-
-        String query4 = '''CREATE TABLE sale_detail(
-            idSaleDetail INTEGER PRIMARY KEY AUTOINCREMENT,
-            idSale INTEGER,
+        String query3 = '''CREATE TABLE sales(
+            idSale INTEGER PRIMARY KEY,
+            title VARCHAR(100),
+            description TEXT,
+            date CHAR(10),
             idItem INTEGER,
             quantity INTEGER,
-            totalPrice REAL),
-            CONSTRAINT fk_sale FOREIGN KEY(idSale) REFERENCES sales(idSale),
+            status VARCHAR(10),  -- 'pending', 'completed', 'cancelled'
             CONSTRAINT fk_item FOREIGN KEY(idItem) REFERENCES items(idItem)
-            );''';
-            db.execute(query4);
+          );''';
+        db.execute(query3);
       },
     );
   }
+
 
   // Método para insertar datos en cualquier tabla
   Future<int> INSERT(String table, Map<String, dynamic> row) async {
@@ -90,6 +80,12 @@ class SalesDatabase {
   Future<List<SalesDAO>> SELECT_ALL_SALES() async {
     var con = await database;
     var result = await con.query('sales');
+    return result.map((sale) => SalesDAO.fromMap(sale)).toList();
+  }
+
+  Future<List<SalesDAO>> getPendingSales() async {
+    var con = await database;
+    var result = await con.query('sales', where: 'status = ?', whereArgs: ['pending']);
     return result.map((sale) => SalesDAO.fromMap(sale)).toList();
   }
 

@@ -138,6 +138,13 @@ class _HomeScreenState extends State<HomeScreen> {
             leading: const Icon(Icons.movie_rounded),
             trailing: const Icon(Icons.chevron_right),
           ),
+          ListTile(
+            onTap: () => Navigator.pushNamed(context, "/sales"),
+            title: const Text('Sales'),
+            subtitle: const Text('DB'),
+            leading: const Icon(Icons.shopping_bag),
+            trailing: const Icon(Icons.chevron_right),
+          ),
         ]
         ),
     );

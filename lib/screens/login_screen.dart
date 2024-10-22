@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_2/firebase/email_auth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -8,6 +9,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  EmailAuth auth = EmailAuth();
   final conUser = TextEditingController();
   final conPwd = TextEditingController();
   bool isLoading = false;
@@ -73,7 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 // Botón de login
                 Positioned(
-                  bottom: constraints.maxHeight * 0.5, // Ajustar la posición
+                  bottom: constraints.maxHeight * 0.18, // Ajustar la posición
                   child: SizedBox(
                     width: constraints.maxWidth * 0.9,
                     child: ElevatedButton(
@@ -81,14 +83,16 @@ class _LoginScreenState extends State<LoginScreen> {
                         backgroundColor: const Color.fromARGB(255, 133, 161, 240),
                       ),
                       onPressed: () {
-                        setState(() {
-                          isLoading = true;
-                        });
-                        Future.delayed(const Duration(milliseconds: 4000)).then((value) {
+                        auth.validateUser(conUser.text, conPwd.text).then((value) {
                           setState(() {
-                            isLoading = false;
+                          isLoading = true;
                           });
-                          Navigator.pushNamed(context, "/onboarding");
+                          Future.delayed(const Duration(milliseconds: 4000)).then((value) {
+                            setState(() {
+                              isLoading = false;
+                            });
+                            Navigator.pushNamed(context, "/onboarding");
+                          });
                         });
                       },
                       child: const Text('Validar Usuario'),

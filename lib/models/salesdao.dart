@@ -3,17 +3,19 @@ class SalesDAO {
   String title;
   String description;
   String date;
-  String status; 
-  int categoryId;
+  int idItem;
+  int quantity;
+  String status;
 
   SalesDAO({
     this.idSale,
     required this.title,
     required this.description,
     required this.date,
-    required this.status,
-    required this.categoryId,
-  });
+    required this.idItem,
+    required this.quantity,
+    required this.status
+});
 
   // Convertir el modelo a un mapa (para operaciones CRUD)
   Map<String, dynamic> toMap() {
@@ -22,8 +24,9 @@ class SalesDAO {
       'title': title,
       'description': description,
       'date': date,
+      'idItem': idItem,
+      'quantity': quantity,
       'status': status,
-      'categoryId': categoryId,
     };
   }
 
@@ -34,8 +37,9 @@ class SalesDAO {
       title: map['title'],
       description: map['description'],
       date: map['date'],
+      idItem: map['idItem'],
+      quantity: map['quantity'],
       status: map['status'],
-      categoryId: map['categoryId'],
     );
   }
 }

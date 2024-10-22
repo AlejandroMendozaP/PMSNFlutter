@@ -63,7 +63,7 @@ class _RegistroScreenState extends State<RegistroScreen> {
                         const SizedBox(height: 16),
                         TextFormField(
                           keyboardType: TextInputType.emailAddress,
-                          controller: conUser,
+                          controller: conEmail,
                           decoration: const InputDecoration(
                             prefixIcon: Icon(Icons.mail),
                             hintText: 'Email',
