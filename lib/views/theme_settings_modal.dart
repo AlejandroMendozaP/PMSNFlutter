@@ -77,10 +77,6 @@ class _ThemeSettingsModalState extends State<ThemeSettingsModal> {
                 child: Text('Roboto'),
               ),
               DropdownMenuItem(
-                value: 'Segoe UI',
-                child: Text('Segoe UI'),
-              ),
-              DropdownMenuItem(
                 value: 'Times New Roman',
                 child: Text('Times New Roman'),
               ),

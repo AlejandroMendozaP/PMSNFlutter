@@ -83,8 +83,8 @@ class _HomeScreenState extends State<HomeScreen> {
           index = i;
         }),
       ),
-      floatingActionButtonLocation: ExpandableFab.location,
-      floatingActionButton: ExpandableFab(
+      //floatingActionButtonLocation: ExpandableFab.location,
+      /*floatingActionButton: ExpandableFab(
         key: _key,
         type: ExpandableFabType.up,
         children: [
@@ -102,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
               },
               child: const Icon(Icons.dark_mode))
         ],
-      ),
+      ),*/
     );
   }
 

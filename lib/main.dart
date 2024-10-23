@@ -59,7 +59,7 @@ class MyApp extends StatelessWidget {
                   "/popularmovies": (context) => const PopularScreen(),
                   "/detail" : (context) => const DetailPopularScreen(),
                   "/registro" : (context) => const RegistroScreen(),
-                  "/sales" : (context) => SalesScreen(),
+                  "/sales" : (context) => const SalesScreen(),
                 },
               ),
             );

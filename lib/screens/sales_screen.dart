@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_2/models/salesdao.dart'; // Importa tu SalesDAO
-import 'package:flutter_application_2/database/sales_database.dart'; // Importa tu SalesDatabase
+import 'package:flutter_application_2/database/sales_database.dart';
+import 'package:flutter_application_2/views/add_sale_modal.dart'; // Importa tu SalesDatabase
 
 class SalesScreen extends StatefulWidget {
   const SalesScreen({Key? key}) : super(key: key);
@@ -17,9 +18,9 @@ class _SalesScreenState extends State<SalesScreen> {
   void initState() {
     super.initState();
     db = SalesDatabase();
-    addExampleCategory();
+    //addExampleCategory();
     addExampleItem();
-    addExampleSales();
+    //addExampleSales();
     loadSales();
   }
 
@@ -30,42 +31,14 @@ class _SalesScreenState extends State<SalesScreen> {
     });
   }
 
-  // Método para agregar una categoría de ejemplo
-  Future<void> addExampleCategory() async {
-    Map<String, dynamic> newCategory = {
-      'nameCategory': 'Example Category'
-    };
-    await db.INSERT('categories', newCategory);
-  }
-
   // Método para agregar un ítem de ejemplo
   Future<void> addExampleItem() async {
     Map<String, dynamic> newItem = {
-      'productName': 'Example Item',
+      'productName': 'Telefono',
       'price': 19.99,
-      'categoryId': 1  // Asegúrate de que este ID coincida con una categoría existente
+      'categoryId': 1
     };
     await db.INSERT('items', newItem);
-  }
-
-  // Método para agregar una venta de ejemplo
-  Future<void> addExampleSales() async {
-    // Asegurarse de que existan categorías e ítems antes de agregar una venta
-    await addExampleCategory();
-    await addExampleItem();
-
-    Map<String, dynamic> newSale = {
-      'title': 'Example Sale',
-      'description': 'This is an example sale.',
-      'date': '2024-10-21',
-      'idItem': 1,  // Asegúrate de que este item exista en la base de datos
-      'quantity': 2,
-      'status': 'pending'
-    };
-    await db.INSERT('sales', newSale);
-
-    // Recarga la lista de ventas
-    loadSales();
   }
 
   @override
@@ -95,6 +68,18 @@ class _SalesScreenState extends State<SalesScreen> {
                         title: Text(sale.title),
                         subtitle: Text(sale.description),
                         trailing: Text(sale.status),
+                        onTap: () {
+                          // Abre el modal para editar con los datos actuales
+                          showModalBottomSheet(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AddSaleModal(
+                                onSaleAdded: () => loadSales(),
+                                sale: sale, // Pasar la venta seleccionada para editar
+                              );
+                            },
+                          );
+                        },
                       );
                     },
                     childCount: sales.length,
@@ -104,6 +89,20 @@ class _SalesScreenState extends State<SalesScreen> {
             );
           }
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color.fromARGB(255, 116, 156, 251),
+        onPressed: () {
+          showModalBottomSheet(
+            context: context,
+            builder: (BuildContext context) {
+              return AddSaleModal(
+                onSaleAdded: () => loadSales(),  // Recargar la lista de ventas
+              );
+            },
+          );
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }

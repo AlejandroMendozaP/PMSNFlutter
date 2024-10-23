@@ -54,36 +54,44 @@ class _PersonajesScreenState extends State<PersonajesScreen> with SingleTickerPr
     );
   }
 
-  Widget buildToolBar() {
-    return Padding(
-      padding:const EdgeInsets.only(top: 20.0),
-      child: Row(
-        children: <Widget>[
-          const SizedBox(width: 20,),
-          AnimatedBuilder(
-            animation: animation,
-            builder: (context, snapshot) {
-              return Transform.translate(
-                offset: Offset(-200 * (1.0 - animation.value), 0),
-                child: Image.asset('assets/anterior.png', width: 30, height: 30,)
-                );
-            }
-          ),
-          const Spacer(),
-          AnimatedBuilder(
-            animation: animation,
-            builder: (context, snapshot) {
-              return Transform.translate(
-                offset: Offset(200 * (1.0 - animation.value), 0),
-                child: Image.asset('assets/menu.png', height: 30, width: 30,)
-                );
-            }
-          ),
-          const SizedBox(width: 20,)
-        ],
-      ),
-    );
-  }
+ Widget buildToolBar() {
+  return Padding(
+    padding: const EdgeInsets.only(top: 20.0),
+    child: Row(
+      children: <Widget>[
+        const SizedBox(width: 20,),
+        AnimatedBuilder(
+          animation: animation,
+          builder: (context, snapshot) {
+            return Transform.translate(
+              offset: Offset(-200 * (1.0 - animation.value), 0),
+              // Envuelve la imagen en GestureDetector para detectar el tap
+              child: GestureDetector(
+                onTap: () {
+                  // Navega a la nueva pantalla al presionar la imagen
+                  Navigator.pushNamed(context, "/home");
+                },
+                child: Image.asset('assets/anterior.png', width: 30, height: 30),
+              ),
+            );
+          }
+        ),
+        const Spacer(),
+        AnimatedBuilder(
+          animation: animation,
+          builder: (context, snapshot) {
+            return Transform.translate(
+              offset: Offset(200 * (1.0 - animation.value), 0),
+              child: Image.asset('assets/menu.png', height: 30, width: 30),
+            );
+          }
+        ),
+        const SizedBox(width: 20,)
+      ],
+    ),
+  );
+}
+
 
   Widget buildLogo(Size size) {
     return Positioned(

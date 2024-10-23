@@ -99,6 +99,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
+                if (isLoading)
+                  Positioned(
+                    top: constraints.maxHeight * 0.2,
+                    height: 150,
+                    child: Image.asset('assets/sentidoaracnido.gif'),
+                  ),
                 Positioned(
                   bottom: constraints.maxHeight * 0.1, // Ajustar la posición
                   child: SizedBox(

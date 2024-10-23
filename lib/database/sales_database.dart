@@ -53,6 +53,12 @@ class SalesDatabase {
             CONSTRAINT fk_item FOREIGN KEY(idItem) REFERENCES items(idItem)
           );''';
         db.execute(query3);
+
+        String query4 = '''
+          INSERT INTO categories (idCategory, nameCategory)
+          VALUES (1,'Electronicos');
+        ''';
+        db.execute(query4);
       },
     );
   }

@@ -207,7 +207,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               icon: Icons.email,
               label: 'Correo',
               controller: _emailController,
-              onTap: () => _launchEmail(_emailController.text),
+              onTap: () {
+                if (_emailController.text.isNotEmpty) {
+                _launchEmail(_emailController.text);
+              }
+              },
               isEditing: _isEditing,
               isEmail: true,
             ),
@@ -216,7 +220,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               icon: Icons.phone,
               label: 'Teléfono',
               controller: _phoneController,
-              onTap: () => _makePhoneCall(_phoneController.text),
+              onTap: () {
+                  if (_phoneController.text.isNotEmpty) {
+                    _makePhoneCall(_phoneController.text);
+                  }
+                },
               isEditing: _isEditing,
               isPhone: true,
             ),
@@ -225,7 +233,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               icon: Icons.link,
               label: 'Usuario de GitHub',
               controller: _githubController,
-              onTap: () => _launchInBrowserView(_githubController.text),
+              onTap: () {
+                  if (_githubController.text.isNotEmpty) {
+                    _launchInBrowserView(_githubController.text);
+                  }
+                },
               isEditing: _isEditing,
             ),
             // Intereses/Hobbies
