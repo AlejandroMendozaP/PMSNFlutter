@@ -27,7 +27,7 @@ class _SalesScreenState extends State<SalesScreen> {
   // Cargar las ventas de la base de datos
   void loadSales() {
     setState(() {
-      salesList = db.SELECT_ALL_SALES();
+      salesList = db.SELECT_ALL_SALES();//db.getPendingSales();
     });
   }
 
@@ -64,10 +64,28 @@ class _SalesScreenState extends State<SalesScreen> {
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
                       SalesDAO sale = sales[index];
+                      String status = sale.status;
+
+                      // Selección del ícono basado en el status
+                      IconData icon;
+                      Color iconColor = Colors.black;
+                      if (status == 'completed') {
+                        icon = Icons.check_circle;
+                        iconColor = Colors.green;
+                      } else if (status == 'pending') {
+                        icon = Icons.hourglass_full_rounded;
+                        iconColor = Colors.orange;
+                      } else if (status == 'cancelled') {
+                        icon = Icons.cancel;
+                        iconColor = Colors.redAccent;
+                      } else {
+                        icon = Icons.electrical_services_rounded; // Ícono por defecto
+                      }
+
                       return ListTile(
                         title: Text(sale.title),
                         subtitle: Text(sale.description),
-                        trailing: Text(sale.status),
+                        trailing: Icon(icon, color: iconColor), // Usamos el ícono según el status
                         onTap: () {
                           // Abre el modal para editar con los datos actuales
                           showModalBottomSheet(
@@ -75,7 +93,8 @@ class _SalesScreenState extends State<SalesScreen> {
                             builder: (BuildContext context) {
                               return AddSaleModal(
                                 onSaleAdded: () => loadSales(),
-                                sale: sale, // Pasar la venta seleccionada para editar
+                                sale:
+                                    sale, // Pasar la venta seleccionada para editar
                               );
                             },
                           );
@@ -97,7 +116,7 @@ class _SalesScreenState extends State<SalesScreen> {
             context: context,
             builder: (BuildContext context) {
               return AddSaleModal(
-                onSaleAdded: () => loadSales(),  // Recargar la lista de ventas
+                onSaleAdded: () => loadSales(), // Recargar la lista de ventas
               );
             },
           );

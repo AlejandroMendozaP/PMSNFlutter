@@ -4,6 +4,7 @@ import 'package:flutter_application_2/database/sales_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_2/database/sales_database.dart';
 import 'package:flutter_application_2/models/salesdao.dart';
+import 'package:intl/intl.dart';
 
 class AddSaleModal extends StatefulWidget {
   final Function onSaleAdded;
@@ -26,6 +27,7 @@ class _AddSaleModalState extends State<AddSaleModal> {
   String? selectedStatus;
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
+  TextEditingController dateController = TextEditingController();
 
   final List<String> statusOptions = ['pending', 'completed', 'cancelled'];
 
@@ -41,14 +43,27 @@ class _AddSaleModalState extends State<AddSaleModal> {
   }
 
   // Prellenar los campos con los datos de la venta existente
-  void populateFields(SalesDAO sale) {
-    titleController.text = sale.title;
-    descriptionController.text = sale.description;
-    selectedDate = DateTime.parse(sale.date);
-    selectedStatus = sale.status;
-    quantity = sale.quantity;
-    selectedItem = sale.idItem;
+  void populateFields(SalesDAO sale) async {
+  titleController.text = sale.title;
+  descriptionController.text = sale.description;
+  selectedDate = DateTime.parse(sale.date);
+  dateController.text = DateFormat('dd-MM-yyyy').format(selectedDate!);
+  selectedStatus = sale.status;
+  quantity = sale.quantity;
+  selectedItem = sale.idItem;
+
+  // Obtener la categoría del ítem
+  var itemData = await db.database.then(
+    (db) => db.query('items', where: 'idItem = ?', whereArgs: [sale.idItem]),
+  );
+
+  if (itemData.isNotEmpty) {
+    selectedCategory = itemData.first['categoryId'] as int?;
+    loadItems(selectedCategory!); // Cargar los ítems de la categoría
+    setState(() {});
   }
+}
+
 
   // Cargar las categorías de la base de datos
   Future<void> loadCategories() async {
@@ -145,9 +160,11 @@ class _AddSaleModalState extends State<AddSaleModal> {
                   loadItems(value!); // Cargar ítems al seleccionar una categoría
                 });
               },
+              value: selectedCategory, // Preseleccionar la categoría
             ),
+
             SizedBox(height: 16),
-            if (items.isNotEmpty)
+            //if (items.isNotEmpty)
               DropdownButtonFormField<int>(
                 decoration: InputDecoration(labelText: 'Item'),
                 items: items.map((item) {
@@ -161,10 +178,31 @@ class _AddSaleModalState extends State<AddSaleModal> {
                     selectedItem = value;
                   });
                 },
-                value: selectedItem,
+                value: selectedItem, // Preseleccionar el ítem
               ),
+
             SizedBox(height: 16),
-            Row(
+            TextFormField(
+              readOnly: true,
+              controller: dateController,
+              decoration: InputDecoration(labelText: 'Date'),
+              onTap: () async {
+                DateTime? picked = await showDatePicker(
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime(1950),
+                  lastDate: DateTime(2030)
+                );
+
+                if(picked != null){
+                  String formatDate = DateFormat('dd-MM-yyyy').format(picked);
+                  dateController.text = formatDate;
+                  selectedDate = picked;
+                  setState(() {});
+                }
+              },
+            ),
+            /*Row(
               children: [
                 Expanded(
                   child: Text(
@@ -178,7 +216,7 @@ class _AddSaleModalState extends State<AddSaleModal> {
                   child: Text('Select Date'),
                 ),
               ],
-            ),
+            ),*/
             SizedBox(height: 16),
             DropdownButtonFormField<String>(
               decoration: InputDecoration(labelText: 'Status'),
@@ -198,7 +236,7 @@ class _AddSaleModalState extends State<AddSaleModal> {
             SizedBox(height: 16),
             Row(
               children: [
-                Text('Quantity: $quantity'),
+                Text('Quantity: '),
                 IconButton(
                   icon: Icon(Icons.remove),
                   onPressed: () {
@@ -207,6 +245,7 @@ class _AddSaleModalState extends State<AddSaleModal> {
                     });
                   },
                 ),
+                Text('$quantity'),
                 IconButton(
                   icon: Icon(Icons.add),
                   onPressed: () {
