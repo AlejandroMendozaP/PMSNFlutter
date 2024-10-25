@@ -53,6 +53,7 @@ dependencies:
   firebase_auth: ^5.3.1
   floating_action_bubble: ^1.1.4
   badges: ^3.1.2
+  group_list_view: ^1.1.1
 
 dev_dependencies:
   flutter_test:

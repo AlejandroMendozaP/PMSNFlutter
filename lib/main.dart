@@ -4,6 +4,7 @@ import 'package:flutter_application_2/firebase_options.dart';
 import 'package:flutter_application_2/provider/test_provider.dart';
 import 'package:flutter_application_2/screens/detail_popular_screen.dart';
 import 'package:flutter_application_2/screens/home_screed.dart';
+import 'package:flutter_application_2/screens/items_screen.dart';
 import 'package:flutter_application_2/screens/login_screen.dart';
 import 'package:flutter_application_2/screens/movies_screen.dart';
 import 'package:flutter_application_2/screens/onboarding_screen.dart';
@@ -60,6 +61,7 @@ class MyApp extends StatelessWidget {
                   "/detail" : (context) => const DetailPopularScreen(),
                   "/registro" : (context) => const RegistroScreen(),
                   "/sales" : (context) => const SalesScreen(),
+                  "/items" : (context) => ItemsScreen(),
                 },
               ),
             );

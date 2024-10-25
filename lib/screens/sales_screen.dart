@@ -63,19 +63,27 @@ class _SalesScreenState extends State<SalesScreen>
           title: const Text('Sales List'),
           actions: [
             badges.Badge(
+              onTap: () {
+                Navigator.pushNamed(context, '/items');
+              },
               badgeContent: Text(
                 '$itemCount',
                 style: TextStyle(color: Colors.white, fontSize: 10), // Ajusta el tamaño del texto
               ),
-              position: badges.BadgePosition.topEnd(top: -15, end: 7), // posición del badge
+              position: badges.BadgePosition.custom(start: -13, top: -10), // posición del badge
               badgeStyle: badges.BadgeStyle(
-                padding: EdgeInsets.all(5), // tamaño del badge
+                //padding: EdgeInsets.all(5), // tamaño del badge
                 badgeColor: Colors.red,
               ),
-              child: Transform.translate(
-                offset: Offset(-20,-5),
-                child: Icon(Icons.checkroom_rounded),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, '/items');
+                },
+                child: Transform.translate(
+                offset: Offset(-5,-5),
+                child: Icon(Icons.checkroom_rounded, ),
               ),
+              )
             ),
           ],
         ),

@@ -96,6 +96,29 @@ class SalesDatabase {
     return result.map((sale) => SalesDAO.fromMap(sale)).toList();
   }
 
+  // Método para obtener los items agrupados por categoría
+Future<Map<String, List<Map<String, dynamic>>>> getItemsGroupedByCategory() async {
+  var con = await database;
+  var result = await con.rawQuery('''
+    SELECT items.productName, items.price, categories.nameCategory
+    FROM items
+    JOIN categories ON items.categoryId = categories.idCategory
+    ORDER BY categories.nameCategory;
+  ''');
+
+  // Agrupando los resultados en un Map por categoría
+  Map<String, List<Map<String, dynamic>>> groupedItems = {};
+  for (var item in result) {
+    String category = item['nameCategory'] as String;
+    if (groupedItems[category] == null) {
+      groupedItems[category] = [];
+    }
+    groupedItems[category]!.add(item);
+  }
+  return groupedItems;
+}
+
+
   Future<List<SalesDAO>> getPendingSales() async {
     var con = await database;
     var result = await con.query('sales', where: 'status = ?', whereArgs: ['pending']);
