@@ -82,6 +82,13 @@ class SalesDatabase {
     return await con.delete(table, where: '$idColumn = ?', whereArgs: [id]);
   }
 
+  // Método para obtener la cantidad de items en la tabla 'items'
+  Future<int> getItemCount() async {
+    var con = await database;
+    var result = await con.rawQuery('SELECT COUNT(*) as count FROM items');
+    return result.isNotEmpty ? result.first['count'] as int : 0;
+  }
+
   // Método para obtener todas las ventas
   Future<List<SalesDAO>> SELECT_ALL_SALES() async {
     var con = await database;

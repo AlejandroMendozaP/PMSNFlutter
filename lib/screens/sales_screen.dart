@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_2/models/salesdao.dart'; // Importa tu SalesDAO
@@ -5,6 +7,7 @@ import 'package:flutter_application_2/database/sales_database.dart';
 import 'package:flutter_application_2/views/add_category_modal.dart';
 import 'package:flutter_application_2/views/add_item_modal.dart';
 import 'package:flutter_application_2/views/add_sale_modal.dart'; // Importa tu SalesDatabase
+import 'package:badges/badges.dart' as badges;
 
 class SalesScreen extends StatefulWidget {
   const SalesScreen({Key? key}) : super(key: key);
@@ -13,11 +16,13 @@ class SalesScreen extends StatefulWidget {
   _SalesScreenState createState() => _SalesScreenState();
 }
 
-class _SalesScreenState extends State<SalesScreen> with SingleTickerProviderStateMixin{
+class _SalesScreenState extends State<SalesScreen>
+    with SingleTickerProviderStateMixin {
   late SalesDatabase db;
   late Future<List<SalesDAO>> salesList;
   late Animation<double> _animation;
   late AnimationController _animationController;
+  int itemCount = 0;
 
   @override
   void initState() {
@@ -26,16 +31,14 @@ class _SalesScreenState extends State<SalesScreen> with SingleTickerProviderStat
       duration: Duration(milliseconds: 260),
     );
 
-    final curvedAnimation =
-        CurvedAnimation(curve: Curves.fastOutSlowIn, parent: _animationController);
+    final curvedAnimation = CurvedAnimation(
+        curve: Curves.fastOutSlowIn, parent: _animationController);
     _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
 
     super.initState();
     db = SalesDatabase();
-    //addExampleCategory();
-    addExampleItem();
-    //addExampleSales();
     loadSales();
+    loadItemCount();
   }
 
   // Cargar las ventas de la base de datos
@@ -45,14 +48,12 @@ class _SalesScreenState extends State<SalesScreen> with SingleTickerProviderStat
     });
   }
 
-  // Método para agregar un ítem de ejemplo
-  Future<void> addExampleItem() async {
-    Map<String, dynamic> newItem = {
-      'productName': 'Telefono',
-      'price': 19.99,
-      'categoryId': 1
-    };
-    await db.INSERT('items', newItem);
+  // Método para cargar la cantidad de items
+  Future<void> loadItemCount() async {
+    int count = await db.getItemCount();
+    setState(() {
+      itemCount = count;
+    });
   }
 
   @override
@@ -60,6 +61,23 @@ class _SalesScreenState extends State<SalesScreen> with SingleTickerProviderStat
     return Scaffold(
         appBar: AppBar(
           title: const Text('Sales List'),
+          actions: [
+            badges.Badge(
+              badgeContent: Text(
+                '$itemCount',
+                style: TextStyle(color: Colors.white, fontSize: 10), // Ajusta el tamaño del texto
+              ),
+              position: badges.BadgePosition.topEnd(top: -15, end: 7), // posición del badge
+              badgeStyle: badges.BadgeStyle(
+                padding: EdgeInsets.all(5), // tamaño del badge
+                badgeColor: Colors.red,
+              ),
+              child: Transform.translate(
+                offset: Offset(-20,-5),
+                child: Icon(Icons.checkroom_rounded),
+              ),
+            ),
+          ],
         ),
         body: FutureBuilder<List<SalesDAO>>(
           future: salesList,
@@ -126,7 +144,6 @@ class _SalesScreenState extends State<SalesScreen> with SingleTickerProviderStat
             }
           },
         ),
-
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         //Init Floating Action Bubble
         floatingActionButton: FloatingActionBubble(
@@ -157,7 +174,7 @@ class _SalesScreenState extends State<SalesScreen> with SingleTickerProviderStat
               title: "Item",
               iconColor: Colors.white,
               bubbleColor: Colors.blue,
-              icon: Icons.whatshot_rounded,
+              icon: Icons.checkroom_rounded,
               titleStyle: TextStyle(fontSize: 16, color: Colors.white),
               onPress: () {
                 showModalBottomSheet(
@@ -166,8 +183,9 @@ class _SalesScreenState extends State<SalesScreen> with SingleTickerProviderStat
                   builder: (BuildContext context) {
                     return AddItemModal(
                       onItemAdded: () {
-                        // Aquí puedes actualizar la lista de items o cualquier otra acción
-                        Navigator.pop(context); // Cierra el modal después de agregar
+                        loadItemCount();
+                        Navigator.pop(
+                            context); // Cierra el modal después de agregar
                       },
                     );
                   },
