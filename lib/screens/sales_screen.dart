@@ -2,6 +2,8 @@ import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_2/models/salesdao.dart'; // Importa tu SalesDAO
 import 'package:flutter_application_2/database/sales_database.dart';
+import 'package:flutter_application_2/views/add_category_modal.dart';
+import 'package:flutter_application_2/views/add_item_modal.dart';
 import 'package:flutter_application_2/views/add_sale_modal.dart'; // Importa tu SalesDatabase
 
 class SalesScreen extends StatefulWidget {
@@ -158,6 +160,18 @@ class _SalesScreenState extends State<SalesScreen> with SingleTickerProviderStat
               icon: Icons.whatshot_rounded,
               titleStyle: TextStyle(fontSize: 16, color: Colors.white),
               onPress: () {
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  builder: (BuildContext context) {
+                    return AddItemModal(
+                      onItemAdded: () {
+                        // Aquí puedes actualizar la lista de items o cualquier otra acción
+                        Navigator.pop(context); // Cierra el modal después de agregar
+                      },
+                    );
+                  },
+                );
                 _animationController.reverse();
               },
             ),
@@ -169,6 +183,17 @@ class _SalesScreenState extends State<SalesScreen> with SingleTickerProviderStat
               icon: Icons.category,
               titleStyle: TextStyle(fontSize: 16, color: Colors.white),
               onPress: () {
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  builder: (BuildContext context) {
+                    return AddCategoryModal(
+                      onCategoryAdded: () {
+                        // Aquí puedes cargar de nuevo las categorías si lo necesitas
+                      },
+                    );
+                  },
+                );
                 _animationController.reverse();
               },
             ),
