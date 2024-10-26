@@ -1,12 +1,10 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_2/models/salesdao.dart'; // Importa tu SalesDAO
+import 'package:flutter_application_2/models/salesdao.dart';
 import 'package:flutter_application_2/database/sales_database.dart';
 import 'package:flutter_application_2/views/add_category_modal.dart';
 import 'package:flutter_application_2/views/add_item_modal.dart';
-import 'package:flutter_application_2/views/add_sale_modal.dart'; // Importa tu SalesDatabase
+import 'package:flutter_application_2/views/add_sale_modal.dart';
 import 'package:badges/badges.dart' as badges;
 
 class SalesScreen extends StatefulWidget {
@@ -19,36 +17,35 @@ class SalesScreen extends StatefulWidget {
 class _SalesScreenState extends State<SalesScreen>
     with SingleTickerProviderStateMixin {
   late SalesDatabase db;
-  late Future<List<SalesDAO>> salesList;
+  late Future<List<SalesDAO>> pendingSalesList;
+  late Future<List<SalesDAO>> allSalesList;
   late Animation<double> _animation;
   late AnimationController _animationController;
   int itemCount = 0;
 
   @override
   void initState() {
+    super.initState();
     _animationController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 260),
     );
-
     final curvedAnimation = CurvedAnimation(
         curve: Curves.fastOutSlowIn, parent: _animationController);
     _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
 
-    super.initState();
     db = SalesDatabase();
     loadSales();
     loadItemCount();
   }
 
-  // Cargar las ventas de la base de datos
   void loadSales() {
     setState(() {
-      salesList = db.SELECT_ALL_SALES(); //db.getPendingSales();
+      pendingSalesList = db.getPendingSales();
+      allSalesList = db.SELECT_ALL_SALES();
     });
   }
 
-  // Método para cargar la cantidad de items
   Future<void> loadItemCount() async {
     int count = await db.getItemCount();
     setState(() {
@@ -56,108 +53,115 @@ class _SalesScreenState extends State<SalesScreen>
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('Sales List'),
-          actions: [
-            badges.Badge(
-              onTap: () {
-                Navigator.pushNamed(context, '/items');
-              },
-              badgeContent: Text(
-                '$itemCount',
-                style: TextStyle(color: Colors.white, fontSize: 10), // Ajusta el tamaño del texto
-              ),
-              position: badges.BadgePosition.custom(start: -13, top: -10), // posición del badge
-              badgeStyle: badges.BadgeStyle(
-                //padding: EdgeInsets.all(5), // tamaño del badge
-                badgeColor: Colors.red,
-              ),
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.pushNamed(context, '/items');
-                },
-                child: Transform.translate(
-                offset: Offset(-5,-5),
-                child: Icon(Icons.checkroom_rounded, ),
-              ),
-              )
-            ),
-          ],
-        ),
-        body: FutureBuilder<List<SalesDAO>>(
-          future: salesList,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return const Center(child: Text('Error loading sales'));
-            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Center(child: Text('No sales available'));
-            } else {
-              var sales = snapshot.data!;
-              return CustomScrollView(
-                slivers: [
-                  SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        SalesDAO sale = sales[index];
-                        String status = sale.status;
+  Widget buildSalesList(Future<List<SalesDAO>> salesFuture) {
+    return FutureBuilder<List<SalesDAO>>(
+      future: salesFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return const Center(child: Text('Error loading sales'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(child: Text('No sales available'));
+        } else {
+          var sales = snapshot.data!;
+          return CustomScrollView(
+            slivers: [
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    SalesDAO sale = sales[index];
+                    IconData icon;
+                    Color iconColor = Colors.black;
+                    switch (sale.status) {
+                      case 'completed':
+                        icon = Icons.check_circle;
+                        iconColor = Colors.green;
+                        break;
+                      case 'pending':
+                        icon = Icons.hourglass_full_rounded;
+                        iconColor = Colors.orange;
+                        break;
+                      case 'cancelled':
+                        icon = Icons.cancel;
+                        iconColor = Colors.redAccent;
+                        break;
+                      default:
+                        icon = Icons.electrical_services_rounded;
+                    }
 
-                        // Selección del ícono basado en el status
-                        IconData icon;
-                        Color iconColor = Colors.black;
-                        if (status == 'completed') {
-                          icon = Icons.check_circle;
-                          iconColor = Colors.green;
-                        } else if (status == 'pending') {
-                          icon = Icons.hourglass_full_rounded;
-                          iconColor = Colors.orange;
-                        } else if (status == 'cancelled') {
-                          icon = Icons.cancel;
-                          iconColor = Colors.redAccent;
-                        } else {
-                          icon = Icons
-                              .electrical_services_rounded; // Ícono por defecto
-                        }
-
-                        return ListTile(
-                          title: Text(sale.title),
-                          subtitle: Text(sale.description),
-                          trailing: Icon(icon,
-                              color:
-                                  iconColor), // Usamos el ícono según el status
-                          onTap: () {
-                            // Abre el modal para editar con los datos actuales
-                            showModalBottomSheet(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AddSaleModal(
-                                  onSaleAdded: () => loadSales(),
-                                  sale:
-                                      sale, // Pasar la venta seleccionada para editar
-                                );
-                              },
+                    return ListTile(
+                      title: Text(sale.title),
+                      subtitle: Text(sale.description),
+                      trailing: Icon(icon, color: iconColor),
+                      onTap: () {
+                        showModalBottomSheet(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AddSaleModal(
+                              onSaleAdded: () => loadSales(),
+                              sale: sale,
                             );
                           },
                         );
                       },
-                      childCount: sales.length,
-                    ),
-                  ),
-                ],
-              );
-            }
-          },
+                    );
+                  },
+                  childCount: sales.length,
+                ),
+              ),
+            ],
+          );
+        }
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Sales List'),
+          bottom: TabBar(
+            tabs: [
+              Tab(text: "Pending Sales"),
+              Tab(text: "All Sales"),
+              Tab(text: "Calendar"),
+            ],
+          ),
+          actions: [
+            badges.Badge(
+              onTap: () => Navigator.pushNamed(context, '/items'),
+              badgeContent: Text(
+                '$itemCount',
+                style: TextStyle(color: Colors.white, fontSize: 10),
+              ),
+              position: badges.BadgePosition.custom(start: -13, top: -10),
+              badgeStyle: badges.BadgeStyle(
+                badgeColor: Colors.red,
+              ),
+              child: GestureDetector(
+                onTap: () => Navigator.pushNamed(context, '/items'),
+                child: Transform.translate(
+                  offset: Offset(-5, -5),
+                  child: Icon(Icons.checkroom_rounded),
+                ),
+              ),
+            ),
+          ],
+        ),
+        body: TabBarView(
+          children: [
+            buildSalesList(pendingSalesList), // Primera pestaña con ventas pendientes
+            buildSalesList(allSalesList), // Segunda pestaña con todas las ventas
+            Center(child: Text('Calendar')), // Tercera pestaña vacía
+          ],
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-        //Init Floating Action Bubble
         floatingActionButton: FloatingActionBubble(
-          // Menu items
           items: <Bubble>[
-            // Floating action menu item
             Bubble(
               title: "Sale",
               iconColor: Colors.white,
@@ -168,16 +172,12 @@ class _SalesScreenState extends State<SalesScreen>
                 showModalBottomSheet(
                   context: context,
                   builder: (BuildContext context) {
-                    return AddSaleModal(
-                      onSaleAdded: () =>
-                          loadSales(), // Recargar la lista de ventas
-                    );
+                    return AddSaleModal(onSaleAdded: () => loadSales());
                   },
                 );
                 _animationController.reverse();
               },
             ),
-            // Floating action menu item
             Bubble(
               title: "Item",
               iconColor: Colors.white,
@@ -192,8 +192,7 @@ class _SalesScreenState extends State<SalesScreen>
                     return AddItemModal(
                       onItemAdded: () {
                         loadItemCount();
-                        Navigator.pop(
-                            context); // Cierra el modal después de agregar
+                        Navigator.pop(context);
                       },
                     );
                   },
@@ -201,7 +200,6 @@ class _SalesScreenState extends State<SalesScreen>
                 _animationController.reverse();
               },
             ),
-            //Floating action menu item
             Bubble(
               title: "Category",
               iconColor: Colors.white,
@@ -214,9 +212,7 @@ class _SalesScreenState extends State<SalesScreen>
                   isScrollControlled: true,
                   builder: (BuildContext context) {
                     return AddCategoryModal(
-                      onCategoryAdded: () {
-                        // Aquí puedes cargar de nuevo las categorías si lo necesitas
-                      },
+                      onCategoryAdded: () {},
                     );
                   },
                 );
@@ -224,21 +220,15 @@ class _SalesScreenState extends State<SalesScreen>
               },
             ),
           ],
-
-          // animation controller
           animation: _animation,
-
-          // On pressed change animation state
           onPress: () => _animationController.isCompleted
               ? _animationController.reverse()
               : _animationController.forward(),
-
-          // Floating Action button Icon color
           iconColor: Colors.white,
-
-          // Flaoting Action button Icon
           iconData: Icons.add,
           backGroundColor: Colors.blue,
-        ));
+        ),
+      ),
+    );
   }
 }
