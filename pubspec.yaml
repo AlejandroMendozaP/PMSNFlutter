@@ -54,6 +54,8 @@ dependencies:
   floating_action_bubble: ^1.1.4
   badges: ^3.1.2
   group_list_view: ^1.1.1
+  cloud_firestore: ^5.4.0
+  table_calendar: ^3.1.2
 
 dev_dependencies:
   flutter_test:

@@ -1,4 +1,3 @@
-import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_2/models/salesdao.dart';
 import 'package:flutter_application_2/database/sales_database.dart';
@@ -6,6 +5,8 @@ import 'package:flutter_application_2/views/add_category_modal.dart';
 import 'package:flutter_application_2/views/add_item_modal.dart';
 import 'package:flutter_application_2/views/add_sale_modal.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:table_calendar/table_calendar.dart';
+import 'package:floating_action_bubble/floating_action_bubble.dart';
 
 class SalesScreen extends StatefulWidget {
   const SalesScreen({Key? key}) : super(key: key);
@@ -16,14 +17,20 @@ class SalesScreen extends StatefulWidget {
 
 class _SalesScreenState extends State<SalesScreen>
     with SingleTickerProviderStateMixin {
-  late SalesDatabase db;
-  late Future<List<SalesDAO>> pendingSalesList;
-  late Future<List<SalesDAO>> allSalesList;
+   late SalesDatabase db;
+  late Future<List<SalesDAO>> pendingSalesList = Future.value([]); // Valor predeterminado
+  late Future<List<SalesDAO>> allSalesList = Future.value([]);
   late Animation<double> _animation;
   late AnimationController _animationController;
   int itemCount = 0;
+  CalendarFormat _calendarFormat = CalendarFormat.month;
 
-  @override
+  DateTime _focusedDay = DateTime.now();
+  DateTime? _selectedDay;
+
+  Map<DateTime, List<SalesDAO>> salesEvents = {};
+
+   @override
   void initState() {
     super.initState();
     _animationController = AnimationController(
@@ -35,16 +42,21 @@ class _SalesScreenState extends State<SalesScreen>
     _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
 
     db = SalesDatabase();
-    loadSales();
+    loadSales(); // Llamar a loadSales en initState para cargar los datos
     loadItemCount();
   }
 
   void loadSales() {
+  db.SELECT_ALL_SALES().then((sales) {
     setState(() {
+      allSalesList = Future.value(sales);  // Cargar lista completa de ventas
       pendingSalesList = db.getPendingSales();
-      allSalesList = db.SELECT_ALL_SALES();
+      salesEvents = _groupSalesByDate(sales); // Agrupar y asignar eventos al mapa de eventos
     });
-  }
+  }).catchError((error) {
+    print('Error loading sales: $error'); // Manejo de errores
+  });
+}
 
   Future<void> loadItemCount() async {
     int count = await db.getItemCount();
@@ -52,6 +64,48 @@ class _SalesScreenState extends State<SalesScreen>
       itemCount = count;
     });
   }
+
+  Map<DateTime, List<SalesDAO>> _groupSalesByDate(List<SalesDAO> sales) {
+  Map<DateTime, List<SalesDAO>> salesMap = {};
+  for (var sale in sales) {
+    DateTime saleDate = DateTime.parse(sale.date); // Asegurar formato de fecha
+    DateTime onlyDate = DateTime(saleDate.year, saleDate.month, saleDate.day);
+    salesMap.putIfAbsent(onlyDate, () => []).add(sale);
+  }
+  return salesMap;
+}
+
+
+  Widget buildCalendar() {
+  return TableCalendar(
+    firstDay: DateTime.utc(2020, 1, 1),
+    lastDay: DateTime.utc(2030, 12, 31),
+    focusedDay: _focusedDay,
+    calendarFormat: _calendarFormat,
+    selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+    onDaySelected: (selectedDay, focusedDay) {
+      setState(() {
+        _selectedDay = selectedDay;
+        _focusedDay = focusedDay;
+      });// Comprobación de día seleccionado
+    },
+    onFormatChanged: (format) {
+      if (_calendarFormat != format) {
+        setState(() {
+          _calendarFormat = format;
+        });
+      }
+    },
+    onPageChanged: (focusedDay) {
+      _focusedDay = focusedDay;
+    },
+    eventLoader: (day) {
+      // Comprobación de eventos para el día específico
+      final events = salesEvents[DateTime(day.year, day.month, day.day)] ?? [];
+      return events;
+    },
+  );
+}
 
   Widget buildSalesList(Future<List<SalesDAO>> salesFuture) {
     return FutureBuilder<List<SalesDAO>>(
@@ -124,11 +178,13 @@ class _SalesScreenState extends State<SalesScreen>
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Sales List'),
-          bottom: TabBar(
+          bottom: const TabBar(
+            indicatorColor: Colors.blue,
+            labelColor: Colors.blueAccent,
             tabs: [
-              Tab(text: "Pending Sales"),
-              Tab(text: "All Sales"),
-              Tab(text: "Calendar"),
+              Tab(text: "Pending Sales", icon: Icon(Icons.timer_rounded)),
+              Tab(text: "All Sales", icon: Icon(Icons.all_inbox_rounded)),
+              Tab(text: "Calendar", icon: Icon(Icons.calendar_month_outlined)),
             ],
           ),
           actions: [
@@ -136,17 +192,17 @@ class _SalesScreenState extends State<SalesScreen>
               onTap: () => Navigator.pushNamed(context, '/items'),
               badgeContent: Text(
                 '$itemCount',
-                style: TextStyle(color: Colors.white, fontSize: 10),
+                style: const TextStyle(color: Colors.white, fontSize: 10),
               ),
               position: badges.BadgePosition.custom(start: -13, top: -10),
-              badgeStyle: badges.BadgeStyle(
+              badgeStyle: const badges.BadgeStyle(
                 badgeColor: Colors.red,
               ),
               child: GestureDetector(
                 onTap: () => Navigator.pushNamed(context, '/items'),
                 child: Transform.translate(
-                  offset: Offset(-5, -5),
-                  child: Icon(Icons.checkroom_rounded),
+                  offset: const Offset(-5, -5),
+                  child: const Icon(Icons.checkroom_rounded),
                 ),
               ),
             ),
@@ -154,9 +210,9 @@ class _SalesScreenState extends State<SalesScreen>
         ),
         body: TabBarView(
           children: [
-            buildSalesList(pendingSalesList), // Primera pestaña con ventas pendientes
-            buildSalesList(allSalesList), // Segunda pestaña con todas las ventas
-            Center(child: Text('Calendar')), // Tercera pestaña vacía
+            buildSalesList(pendingSalesList), // Primera pestaña
+            buildSalesList(Future.value(allSalesList)), // Segunda pestaña
+            buildCalendar(),
           ],
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
@@ -224,11 +280,17 @@ class _SalesScreenState extends State<SalesScreen>
           onPress: () => _animationController.isCompleted
               ? _animationController.reverse()
               : _animationController.forward(),
-          iconColor: Colors.white,
-          iconData: Icons.add,
-          backGroundColor: Colors.blue,
+          iconColor: Colors.blue,
+          animatedIconData: AnimatedIcons.menu_close,
+          backGroundColor: Colors.white,
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 }

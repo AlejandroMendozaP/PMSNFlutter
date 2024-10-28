@@ -7,6 +7,7 @@ import 'package:flutter_application_2/screens/home_screed.dart';
 import 'package:flutter_application_2/screens/items_screen.dart';
 import 'package:flutter_application_2/screens/login_screen.dart';
 import 'package:flutter_application_2/screens/movies_screen.dart';
+import 'package:flutter_application_2/screens/movies_screen_firebase.dart';
 import 'package:flutter_application_2/screens/onboarding_screen.dart';
 import 'package:flutter_application_2/screens/personajes_screen.dart';
 import 'package:flutter_application_2/screens/popular_screen.dart';
@@ -62,6 +63,7 @@ class MyApp extends StatelessWidget {
                   "/registro" : (context) => const RegistroScreen(),
                   "/sales" : (context) => const SalesScreen(),
                   "/items" : (context) => ItemsScreen(),
+                  "/firebasemovies" : (context) => const MoviesScreenFirebase()
                 },
               ),
             );
