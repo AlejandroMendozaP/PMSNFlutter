@@ -17,8 +17,9 @@ class SalesScreen extends StatefulWidget {
 
 class _SalesScreenState extends State<SalesScreen>
     with SingleTickerProviderStateMixin {
-   late SalesDatabase db;
-  late Future<List<SalesDAO>> pendingSalesList = Future.value([]); // Valor predeterminado
+  late SalesDatabase db;
+  late Future<List<SalesDAO>> pendingSalesList =
+      Future.value([]); // Valor predeterminado
   late Future<List<SalesDAO>> allSalesList = Future.value([]);
   late Animation<double> _animation;
   late AnimationController _animationController;
@@ -30,7 +31,7 @@ class _SalesScreenState extends State<SalesScreen>
 
   Map<DateTime, List<SalesDAO>> salesEvents = {};
 
-   @override
+  @override
   void initState() {
     super.initState();
     _animationController = AnimationController(
@@ -47,16 +48,17 @@ class _SalesScreenState extends State<SalesScreen>
   }
 
   void loadSales() {
-  db.SELECT_ALL_SALES().then((sales) {
-    setState(() {
-      allSalesList = Future.value(sales);  // Cargar lista completa de ventas
-      pendingSalesList = db.getPendingSales();
-      salesEvents = _groupSalesByDate(sales); // Agrupar y asignar eventos al mapa de eventos
+    db.SELECT_ALL_SALES().then((sales) {
+      setState(() {
+        allSalesList = Future.value(sales); // Cargar lista completa de ventas
+        pendingSalesList = db.getPendingSales();
+        salesEvents = _groupSalesByDate(
+            sales); // Agrupar y asignar eventos al mapa de eventos
+      });
+    }).catchError((error) {
+      print('Error loading sales: $error'); // Manejo de errores
     });
-  }).catchError((error) {
-    print('Error loading sales: $error'); // Manejo de errores
-  });
-}
+  }
 
   Future<void> loadItemCount() async {
     int count = await db.getItemCount();
@@ -66,46 +68,105 @@ class _SalesScreenState extends State<SalesScreen>
   }
 
   Map<DateTime, List<SalesDAO>> _groupSalesByDate(List<SalesDAO> sales) {
-  Map<DateTime, List<SalesDAO>> salesMap = {};
-  for (var sale in sales) {
-    DateTime saleDate = DateTime.parse(sale.date); // Asegurar formato de fecha
-    DateTime onlyDate = DateTime(saleDate.year, saleDate.month, saleDate.day);
-    salesMap.putIfAbsent(onlyDate, () => []).add(sale);
+    Map<DateTime, List<SalesDAO>> salesMap = {};
+    for (var sale in sales) {
+      DateTime saleDate =
+          DateTime.parse(sale.date); // Asegurar formato de fecha
+      DateTime onlyDate = DateTime(saleDate.year, saleDate.month, saleDate.day);
+      salesMap.putIfAbsent(onlyDate, () => []).add(sale);
+    }
+    return salesMap;
   }
-  return salesMap;
+
+  void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
+  setState(() {
+    _selectedDay = selectedDay;
+    _focusedDay = focusedDay;
+  });
+
+  // Llama al método para obtener las ventas de la fecha seleccionada
+  db.getSalesByDate(selectedDay).then((sales) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SizedBox(
+          height: 400,
+          child: Column(
+            children: [
+              Text(
+                "Sales on ${selectedDay.day}-${selectedDay.month}-${selectedDay.year}",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              Divider(),
+              if (sales.isEmpty)
+                Center(child: Text("No sales available for this day")),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: sales.length,
+                  itemBuilder: (context, index) {
+                    final sale = sales[index];
+                    return ListTile(
+                      title: Text(sale.title),
+                      subtitle: Text(sale.description),
+                      trailing: Icon(
+                        sale.status == 'completed'
+                            ? Icons.check_circle
+                            : sale.status == 'pending'
+                                ? Icons.hourglass_full
+                                : Icons.cancel,
+                        color: sale.status == 'completed'
+                            ? Colors.green
+                            : sale.status == 'pending'
+                                ? Colors.orange
+                                : Colors.red,
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  });
 }
 
 
   Widget buildCalendar() {
-  return TableCalendar(
-    firstDay: DateTime.utc(2020, 1, 1),
-    lastDay: DateTime.utc(2030, 12, 31),
-    focusedDay: _focusedDay,
-    calendarFormat: _calendarFormat,
-    selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-    onDaySelected: (selectedDay, focusedDay) {
-      setState(() {
-        _selectedDay = selectedDay;
+    return TableCalendar(
+      firstDay: DateTime.utc(2020, 1, 1),
+      lastDay: DateTime.utc(2030, 12, 31),
+      focusedDay: _focusedDay,
+      calendarFormat: _calendarFormat,
+      selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+      onDaySelected: _onDaySelected,
+      daysOfWeekStyle: const DaysOfWeekStyle(
+        weekdayStyle: TextStyle(color: Color.fromARGB(255, 166, 199, 255)),
+        weekendStyle: TextStyle(color: Color.fromARGB(255, 252, 141, 141))
+      ),
+      calendarStyle: const CalendarStyle(
+        todayDecoration: BoxDecoration(color: Color.fromARGB(255, 1, 174, 38), shape: BoxShape.circle),
+        selectedDecoration: BoxDecoration(color: Color.fromARGB(255, 137, 197, 143), shape: BoxShape.circle)
+      ),
+      onFormatChanged: (format) {
+        if (_calendarFormat != format) {
+          setState(() {
+            _calendarFormat = format;
+          });
+        }
+      },
+      onPageChanged: (focusedDay) {
         _focusedDay = focusedDay;
-      });// Comprobación de día seleccionado
-    },
-    onFormatChanged: (format) {
-      if (_calendarFormat != format) {
-        setState(() {
-          _calendarFormat = format;
-        });
-      }
-    },
-    onPageChanged: (focusedDay) {
-      _focusedDay = focusedDay;
-    },
-    eventLoader: (day) {
-      // Comprobación de eventos para el día específico
-      final events = salesEvents[DateTime(day.year, day.month, day.day)] ?? [];
-      return events;
-    },
-  );
-}
+      },
+      eventLoader: (day) {
+        // Comprobación de eventos para el día específico
+        final events =
+            salesEvents[DateTime(day.year, day.month, day.day)] ?? [];
+        return events;
+      },
+    );
+  }
 
   Widget buildSalesList(Future<List<SalesDAO>> salesFuture) {
     return FutureBuilder<List<SalesDAO>>(
@@ -280,9 +341,9 @@ class _SalesScreenState extends State<SalesScreen>
           onPress: () => _animationController.isCompleted
               ? _animationController.reverse()
               : _animationController.forward(),
-          iconColor: Colors.blue,
+          iconColor: Colors.white,
           animatedIconData: AnimatedIcons.menu_close,
-          backGroundColor: Colors.white,
+          backGroundColor: Colors.blue,
         ),
       ),
     );

@@ -125,4 +125,20 @@ Future<Map<String, List<Map<String, dynamic>>>> getItemsGroupedByCategory() asyn
     return result.map((sale) => SalesDAO.fromMap(sale)).toList();
   }
 
+  Future<List<SalesDAO>> getSalesByDate(DateTime date) async {
+  final db = await database;
+  // Asegura que el mes y día tengan dos dígitos
+  final String formattedDate = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+
+  final List<Map<String, dynamic>> maps = await db.query(
+    'sales',
+    where: "date = ?",
+    whereArgs: [formattedDate],
+  );
+
+  return maps.map((map) => SalesDAO.fromMap(map)).toList();
+}
+
+
+
 }
