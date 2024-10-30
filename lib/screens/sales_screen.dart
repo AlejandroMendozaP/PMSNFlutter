@@ -7,6 +7,10 @@ import 'package:flutter_application_2/views/add_sale_modal.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:table_calendar/table_calendar.dart';
 import 'package:floating_action_bubble/floating_action_bubble.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
+
 
 class SalesScreen extends StatefulWidget {
   const SalesScreen({Key? key}) : super(key: key);
@@ -31,6 +35,8 @@ class _SalesScreenState extends State<SalesScreen>
 
   Map<DateTime, List<SalesDAO>> salesEvents = {};
 
+  late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+
   @override
   void initState() {
     super.initState();
@@ -45,6 +51,12 @@ class _SalesScreenState extends State<SalesScreen>
     db = SalesDatabase();
     loadSales(); // Llamar a loadSales en initState para cargar los datos
     loadItemCount();
+
+    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    const initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const initializationSettings = InitializationSettings(android: initializationSettingsAndroid);
+    flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    tz.initializeTimeZones();
   }
 
   void loadSales() {
@@ -55,6 +67,7 @@ class _SalesScreenState extends State<SalesScreen>
         salesEvents = _groupSalesByDate(
             sales); // Agrupar y asignar eventos al mapa de eventos
       });
+      scheduleNotificationsForPendingSales(sales);
     }).catchError((error) {
       print('Error loading sales: $error'); // Manejo de errores
     });
@@ -65,6 +78,40 @@ class _SalesScreenState extends State<SalesScreen>
     setState(() {
       itemCount = count;
     });
+  }
+
+  void scheduleNotificationsForPendingSales(List<SalesDAO> sales) {
+    DateTime now = DateTime.now();
+    for (var sale in sales) {
+      DateTime saleDate = DateTime.parse(sale.date);
+      Duration difference = saleDate.difference(now);
+
+      // Notificar si la venta es para hoy o en dos días
+      if (difference.inDays >= 0 && difference.inDays <= 2) {
+        _scheduleNotification(sale.idSale ?? 0, sale.title, sale.description, saleDate);
+      }
+    }
+}
+
+  Future<void> _scheduleNotification(int id, String title, String description, DateTime scheduledDate) async {
+    var androidDetails = const AndroidNotificationDetails(
+      'sales_channel_id',
+      'Sales Notifications',
+      channelDescription: 'Notificaciones para recordatorios de ventas',
+      importance: Importance.high,
+      priority: Priority.high,
+    );
+    var notificationDetails = NotificationDetails(android: androidDetails);
+
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+  id,
+  'Recordatorio de Venta: $title',
+  'La venta $title está programada para el ${scheduledDate.toLocal()}',
+  tz.TZDateTime.from(scheduledDate, tz.local), // Cambiar a la fecha programada
+  notificationDetails,
+  uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.wallClockTime,
+  matchDateTimeComponents: DateTimeComponents.dateAndTime,
+);
   }
 
   Map<DateTime, List<SalesDAO>> _groupSalesByDate(List<SalesDAO> sales) {

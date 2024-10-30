@@ -17,6 +17,8 @@ import 'package:flutter_application_2/settings/global_values.dart';
 import 'package:flutter_application_2/settings/theme_settings.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,6 +32,8 @@ void main() async {
   // Actualizamos los GlobalValues con los valores almacenados
   GlobalValues.selectedTheme.value = selectedTheme;
   GlobalValues.selectedFontFamily.value = selectedFont;
+
+  tz.initializeTimeZones();
 
   runApp(const MyApp());
 }
