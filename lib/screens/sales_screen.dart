@@ -91,7 +91,7 @@ class _SalesScreenState extends State<SalesScreen>
         _scheduleNotification(sale.idSale ?? 0, sale.title, sale.description, saleDate);
       }
     }
-}
+  }
 
   Future<void> _scheduleNotification(int id, String title, String description, DateTime scheduledDate) async {
     var androidDetails = const AndroidNotificationDetails(
@@ -104,14 +104,14 @@ class _SalesScreenState extends State<SalesScreen>
     var notificationDetails = NotificationDetails(android: androidDetails);
 
     await flutterLocalNotificationsPlugin.zonedSchedule(
-  id,
-  'Recordatorio de Venta: $title',
-  'La venta $title está programada para el ${scheduledDate.toLocal()}',
-  tz.TZDateTime.from(scheduledDate, tz.local), // Cambiar a la fecha programada
-  notificationDetails,
-  uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.wallClockTime,
-  matchDateTimeComponents: DateTimeComponents.dateAndTime,
-);
+      id,
+      'Recordatorio de Venta: $title',
+      'La venta $title está programada para el ${scheduledDate.toLocal()}',
+      tz.TZDateTime.from(scheduledDate, tz.local), // Cambiar a la fecha programada
+      notificationDetails,
+      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.wallClockTime,
+      matchDateTimeComponents: DateTimeComponents.dateAndTime,
+    );
   }
 
   Map<DateTime, List<SalesDAO>> _groupSalesByDate(List<SalesDAO> sales) {

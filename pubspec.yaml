@@ -57,6 +57,7 @@ dependencies:
   cloud_firestore: ^5.4.0
   table_calendar: ^3.1.2
   flutter_local_notifications: ^17.2.4
+  youtube_player_flutter: ^9.1.1
 
 dev_dependencies:
   flutter_test:

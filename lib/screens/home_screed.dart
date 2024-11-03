@@ -145,6 +145,13 @@ class _HomeScreenState extends State<HomeScreen> {
             leading: const Icon(Icons.shopping_bag),
             trailing: const Icon(Icons.chevron_right),
           ),
+          ListTile(
+            onTap: () => Navigator.pushNamed(context, "/firebasemovies"),
+            title: const Text('Firebase'),
+            subtitle: const Text('DB'),
+            leading: const Icon(Icons.data_array),
+            trailing: const Icon(Icons.chevron_right),
+          ),
         ]
         ),
     );
