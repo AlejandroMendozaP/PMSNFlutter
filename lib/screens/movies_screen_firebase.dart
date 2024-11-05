@@ -46,17 +46,22 @@ class _MoviesScreenFirebaseState extends State<MoviesScreenFirebase> {
         stream: databaseMovies!.select(),
         builder:(context, snapshot){
           if (snapshot.hasData) {
-            var movie = snapshot.data;
+            //var movie = snapshot.data;
             return ListView.builder(
               itemCount: snapshot.data!.docs.length,
               itemBuilder: (context, index){
+                var movies = snapshot.data!.docs;
+                var movieData = movies[index];
                 return MovieViewItemFirebase(moviesDAO: MoviesDAO.fromMap({
-                  'idMovie' :'${snapshot.data!.docs[index].id}',
-                  'imgMovie':snapshot.data!.docs[index].get('imgMovie'),
-                  'nameMovie':snapshot.data!.docs[index].get('nameMovie'),
-                  'overview':snapshot.data!.docs[index].get('overview'),
-                  'releaseDate':snapshot.data!.docs[index].get('releaseDate'),
-                }));//Image.network(snapshot.data!.docs[index].get('imgMovie'));
+                  'idMovie' : 0 ,
+                  'imgMovie':movieData.get('imgMovie'),
+                  'nameMovie':movieData.get('nameMovie'),
+                  'overview':movieData.get('overview'),
+                  'releaseDate':movieData.get('releaseDate'),
+
+                }
+                ), Uid: movieData.id,
+                );//Image.network(snapshot.data!.docs[index].get('imgMovie'));
               } ,
             );
           }else if(snapshot.hasError){

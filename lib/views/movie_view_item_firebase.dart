@@ -14,8 +14,10 @@ class MovieViewItemFirebase extends StatefulWidget {
   MovieViewItemFirebase({
     super.key,
     required this.moviesDAO,
+    required this.Uid
     });
   MoviesDAO moviesDAO;
+  final Uid;
 
   @override
   State<MovieViewItemFirebase> createState() => _MovieViewItemFirebaseState();
@@ -64,11 +66,10 @@ class _MovieViewItemFirebaseState extends State<MovieViewItemFirebase> {
               },
               icon: Icon(Icons.edit)
             ),
-            /*IconButton(
+            IconButton(
               onPressed: (){
-                moviesDatabase!.DELETE('tblmovies', widget.moviesDAO.idMovie!).then((value){
-                  if(value>0){
-                    GlobalValues.banUpdateListMovies.value= !GlobalValues.banUpdateListMovies.value;
+                moviesDatabase!.delete(widget.Uid).then((value){
+                  if(value){
                     return QuickAlert.show(
                       context: context,
                       type: QuickAlertType.success,
@@ -89,7 +90,7 @@ class _MovieViewItemFirebaseState extends State<MovieViewItemFirebase> {
                 });
               },
               icon: Icon(Icons.delete)
-            )*/
+            )
             ],
           ),
           const Divider(),

@@ -80,6 +80,7 @@ class _DetailPopularScreenState extends State<DetailPopularScreen> {
                       handleColor: Colors.amberAccent,
                     ),
                   ),
+                  Text('Sinopsis: ${popular!.overview}')
                 ],
               ),
             ),

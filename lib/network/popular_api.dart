@@ -6,14 +6,14 @@ class PopularApi {
   final dio = Dio();
 
   Future <List<PopularMovieDao>> getPopularMovies() async {
-    final response = await dio.get('https://api.themoviedb.org/3/movie/popular?api_key=5019e68de7bc112f4e4337a500b96c56&language=es-MX&page=1');
+    final response = await dio.get('https://api.themoviedb.org/3/movie/popular?api_key=506386d76b16937247b6f1354b597689&language=es-MX&page=1');
     final res = response.data['results'] as List;
 
     return res.map((popular) => PopularMovieDao.fromMap(popular)).toList();
   }
 
   Future <List<PopularTrailerDao>> getPopularTrailer(String idMovie) async{
-    final response = await dio.get('https://api.themoviedb.org/3/movie/${idMovie}/videos?api_key=5019e68de7bc112f4e4337a500b96c56&language=en-US');
+    final response = await dio.get('https://api.themoviedb.org/3/movie/${idMovie}/videos?api_key=506386d76b16937247b6f1354b597689&language=en-US');
     final res = response.data['results'] as List;
 
     return res.map((popular) => PopularTrailerDao.fromMap(popular)).toList();
@@ -21,7 +21,7 @@ class PopularApi {
 
   Future<String?> getTrailerKey(int movieId) async {
     final response = await dio.get(
-        'https://api.themoviedb.org/3/movie/$movieId/videos?api_key=5019e68de7bc112f4e4337a500b96c56&language=en-US');
+        'https://api.themoviedb.org/3/movie/$movieId/videos?api_key=506386d76b16937247b6f1354b597689&language=en-US');
 
     final results = response.data['results'] as List;
 
