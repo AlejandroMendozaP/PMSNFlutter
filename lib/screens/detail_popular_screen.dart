@@ -18,6 +18,7 @@ class _DetailPopularScreenState extends State<DetailPopularScreen> {
   String? videoKey;
   PopularMovieDao? popular;
   List<PopularCast> castList = [];
+  bool isFavorite = false; // Estado para controlar si es favorito
 
   @override
   void initState() {
@@ -42,6 +43,9 @@ class _DetailPopularScreenState extends State<DetailPopularScreen> {
     // Fetch cast
     final cast = await api.getMovieCast(popular!.id);
 
+    // Check if the movie is already in favorites
+    isFavorite = await api.isMovieInFavorites(popular!.id);
+
     setState(() {
       videoKey = key;
       castList = cast;
@@ -58,11 +62,59 @@ class _DetailPopularScreenState extends State<DetailPopularScreen> {
     });
   }
 
+  Future<void> _toggleFavorite() async {
+  final api = PopularApi();
+
+  if (isFavorite) {
+    // Si la película ya es favorita, intenta eliminarla
+    bool success = await api.deleteMovieToFavorites(popular!.id);
+    if (success) {
+      setState(() {
+        isFavorite = false; // Cambia el estado del ícono a no favorito
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Película eliminada de favoritos')),
+      );
+    } else {
+      // Maneja el fallo al eliminar
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error al eliminar de favoritos')),
+      );
+    }
+  } else {
+    // Si la película no es favorita, intenta agregarla
+    bool success = await api.addMovieToFavorites(popular!.id);
+    if (success) {
+      setState(() {
+        isFavorite = true; // Cambia el estado del ícono a favorito
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Película agregada a favoritos')),
+      );
+    } else {
+      // Maneja el fallo al agregar
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error al agregar a favoritos')),
+      );
+    }
+  }
+}
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(popular?.title ?? 'Detalle de la película'),
+        actions: [
+          IconButton(
+            icon: Icon(
+              isFavorite ? Icons.favorite : Icons.favorite_border,
+              color: isFavorite ? Colors.red : const Color.fromARGB(255, 0, 0, 0),
+            ),
+            onPressed: _toggleFavorite, // Maneja el evento de presionar el ícono
+          ),
+        ],
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -111,7 +163,7 @@ class _DetailPopularScreenState extends State<DetailPopularScreen> {
                     ),
                   ),
                   SizedBox(
-                    height: 150, // Altura de la lista horizontal
+                    height: 150,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
                       itemCount: castList.length,

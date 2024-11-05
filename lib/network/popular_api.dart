@@ -5,7 +5,8 @@ import 'package:flutter_application_2/models/popular_trailerdao.dart';
 
 class PopularApi {
   final dio = Dio();
-
+  // URL para el POST de películas favoritas
+  final String favoriteUrl = 'https://api.themoviedb.org/3/list/8495832/add_item?session_id=5a897a6eb0c4ff73cd35cf844b3397b90558bae3';
   Future <List<PopularMovieDao>> getPopularMovies() async {
     final response = await dio.get('https://api.themoviedb.org/3/movie/popular?api_key=506386d76b16937247b6f1354b597689&language=es-MX&page=1');
     final res = response.data['results'] as List;
@@ -37,4 +38,55 @@ class PopularApi {
     // Mapear cada elemento de castData a un objeto PopularCast
     return castData.map((cast) => PopularCast.fromMap(cast)).toList();
   }
+
+  Future<bool> addMovieToFavorites(int movieId) async {
+    const url = 'https://api.themoviedb.org/3/list/8495832/add_item?session_id=5a897a6eb0c4ff73cd35cf844b3397b90558bae3';
+      final response = await dio.post(
+        url,
+        data: {
+          "media_id": movieId,
+        },
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1MDYzODZkNzZiMTY5MzcyNDdiNmYxMzU0YjU5NzY4OSIsIm5iZiI6MTczMDcwMDI0Ni4yNjI2MTQ3LCJzdWIiOiI2NmZlZDk1MDllYmVhMTkwMDZmN2U1ZWQiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.p4xgfKhLHx3WFNsNJREo2LjCfPQ7nWuE4uwxCwiOxRI',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+        ),
+      );
+    return true;
+  }
+
+  Future<bool> deleteMovieToFavorites(int movieId) async {
+    const url = 'https://api.themoviedb.org/3/list/8495832/remove_item?session_id=5a897a6eb0c4ff73cd35cf844b3397b90558bae3';
+    final response = await dio.post(
+        url,
+        data: {
+          "media_id": movieId,
+        },
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1MDYzODZkNzZiMTY5MzcyNDdiNmYxMzU0YjU5NzY4OSIsIm5iZiI6MTczMDcwMDI0Ni4yNjI2MTQ3LCJzdWIiOiI2NmZlZDk1MDllYmVhMTkwMDZmN2U1ZWQiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.p4xgfKhLHx3WFNsNJREo2LjCfPQ7nWuE4uwxCwiOxRI',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+        ),
+      );
+    return true;
+  }
+
+  Future<bool> isMovieInFavorites(int movieId) async {
+  final url = 'https://api.themoviedb.org/3/list/8495832/item_status?language=en-US&movie_id=$movieId';
+
+  final response = await dio.get(url, options: Options(
+    headers: {
+      'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1MDYzODZkNzZiMTY5MzcyNDdiNmYxMzU0YjU5NzY4OSIsIm5iZiI6MTczMDcwMDI0Ni4yNjI2MTQ3LCJzdWIiOiI2NmZlZDk1MDllYmVhMTkwMDZmN2U1ZWQiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.p4xgfKhLHx3WFNsNJREo2LjCfPQ7nWuE4uwxCwiOxRI',
+      'Accept': 'application/json'
+    },
+  ));
+
+  return response.data['item_present'];
+}
+
+
 }
