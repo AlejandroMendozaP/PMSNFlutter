@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_2/models/popular_moviedao.dart';
+import 'package:flutter_application_2/models/popular_cast.dart';
 import 'package:flutter_application_2/network/popular_api.dart';
-import 'package:provider/provider.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class DetailPopularScreen extends StatefulWidget {
   const DetailPopularScreen({super.key});
@@ -16,6 +17,7 @@ class _DetailPopularScreenState extends State<DetailPopularScreen> {
   bool isLoading = true;
   String? videoKey;
   PopularMovieDao? popular;
+  List<PopularCast> castList = [];
 
   @override
   void initState() {
@@ -27,27 +29,33 @@ class _DetailPopularScreenState extends State<DetailPopularScreen> {
     super.didChangeDependencies();
     if (popular == null) {
       popular = ModalRoute.of(context)!.settings.arguments as PopularMovieDao;
-      _fetchTrailer();
+      _fetchTrailerAndCast();
     }
   }
 
-  Future<void> _fetchTrailer() async {
+  Future<void> _fetchTrailerAndCast() async {
     final api = PopularApi();
+
+    // Fetch trailer key
     final key = await api.getTrailerKey(popular!.id);
 
-    if (key != null) {
-      setState(() {
-        videoKey = key;
+    // Fetch cast
+    final cast = await api.getMovieCast(popular!.id);
+
+    setState(() {
+      videoKey = key;
+      castList = cast;
+      if (key != null) {
         _controller = YoutubePlayerController(
           initialVideoId: videoKey!,
-          flags: YoutubePlayerFlags(
+          flags: const YoutubePlayerFlags(
             autoPlay: true,
             mute: false,
           ),
         );
-        isLoading = false;
-      });
-    }
+      }
+      isLoading = false;
+    });
   }
 
   @override
@@ -57,7 +65,7 @@ class _DetailPopularScreenState extends State<DetailPopularScreen> {
         title: Text(popular?.title ?? 'Detalle de la película'),
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : Container(
               decoration: BoxDecoration(
                 image: DecorationImage(
@@ -69,7 +77,7 @@ class _DetailPopularScreenState extends State<DetailPopularScreen> {
                 ),
               ),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   YoutubePlayer(
                     controller: _controller,
@@ -80,7 +88,68 @@ class _DetailPopularScreenState extends State<DetailPopularScreen> {
                       handleColor: Colors.amberAccent,
                     ),
                   ),
-                  Text('Sinopsis: ${popular!.overview}')
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('Sinopsis: ${popular!.overview}'),
+                  ),
+                  RatingBarIndicator(
+                    rating: popular!.voteAverage / 2,
+                    itemBuilder: (context, index) => const Icon(
+                      Icons.star,
+                      color: Colors.amber,
+                    ),
+                    itemCount: 5,
+                    itemSize: 50.0,
+                    direction: Axis.horizontal,
+                  ),
+                  const SizedBox(height: 16.0),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text(
+                      'Reparto',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 150, // Altura de la lista horizontal
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: castList.length,
+                      itemBuilder: (context, index) {
+                        final castMember = castList[index];
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            children: [
+                              CircleAvatar(
+                                radius: 40,
+                                backgroundImage: NetworkImage(
+                                  'https://image.tmdb.org/t/p/w200/${castMember.profilePath}',
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                castMember.name,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              Text(
+                                castMember.character,
+                                style: const TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 10,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),
