@@ -5,11 +5,17 @@ import 'package:flutter_application_2/models/popular_trailerdao.dart';
 
 class PopularApi {
   final dio = Dio();
-  // URL para el POST de películas favoritas
-  final String favoriteUrl = 'https://api.themoviedb.org/3/list/8495832/add_item?session_id=5a897a6eb0c4ff73cd35cf844b3397b90558bae3';
+
   Future <List<PopularMovieDao>> getPopularMovies() async {
     final response = await dio.get('https://api.themoviedb.org/3/movie/popular?api_key=506386d76b16937247b6f1354b597689&language=es-MX&page=1');
     final res = response.data['results'] as List;
+
+    return res.map((popular) => PopularMovieDao.fromMap(popular)).toList();
+  }
+
+  Future <List<PopularMovieDao>> getFavoritesMovies() async {
+    final response = await dio.get('https://api.themoviedb.org/3/list/8495832?api_key=506386d76b16937247b6f1354b597689&language=en-US&page=1');
+    final res = response.data['items'] as List;
 
     return res.map((popular) => PopularMovieDao.fromMap(popular)).toList();
   }
