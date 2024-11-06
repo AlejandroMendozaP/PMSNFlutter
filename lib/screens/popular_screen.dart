@@ -110,7 +110,7 @@ class _PopularScreenState extends State<PopularScreen> with SingleTickerProvider
   // Widget de tarjeta de película
   Widget CardPopupar(PopularMovieDao popular) {
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, '/detail', arguments: popular),
+      onTap: () => Navigator.pushReplacementNamed(context, '/detail', arguments: popular),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(10),
         child: Container(

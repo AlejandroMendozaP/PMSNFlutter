@@ -106,6 +106,12 @@ class _DetailPopularScreenState extends State<DetailPopularScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(popular?.title ?? 'Detalle de la película'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushNamed(context, '/popularmovies');
+          },
+        ),
         actions: [
           IconButton(
             icon: Icon(
