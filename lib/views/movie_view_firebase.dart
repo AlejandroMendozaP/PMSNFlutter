@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_2/database/movies_database.dart';
 import 'package:flutter_application_2/firebase/database_movies.dart';
 import 'package:flutter_application_2/models/moviesdao.dart';
 import 'package:flutter_application_2/settings/global_values.dart';
@@ -8,7 +7,9 @@ import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
 
 class MovieViewFirebase extends StatefulWidget {
-  MovieViewFirebase({super.key, this.moviesDAO});
+  MovieViewFirebase({super.key, this.moviesDAO, this.Uid});
+
+  final String ? Uid;
 
   MoviesDAO? moviesDAO;
 
@@ -101,17 +102,17 @@ class _MovieVewState extends State<MovieViewFirebase> {
               );
             }
           });
-        }/*else{
+        }else{
           databaseMovies!.update({
-            "idMovie" : widget.moviesDAO!.idMovie,
+            "idMovie" : 1,
             "nameMovie" : conName.text,
             "overview" : conOverview.text,
             "imgMovie" : conImgMovie.text,
             "releaseDate" : conRelease.text
-          }).then((value){
+          }, '${widget.Uid}').then((value){
             QuickAlertType type = QuickAlertType.success;
             final msj;
-            if(value>0){
+            if(value){
               GlobalValues.banUpdateListMovies.value = !GlobalValues.banUpdateListMovies.value;
               type = QuickAlertType.success;
               msj = "Transaccion completa";
@@ -126,7 +127,7 @@ class _MovieVewState extends State<MovieViewFirebase> {
                 autoCloseDuration: const Duration(seconds: 2),
                 showConfirmBtn: false,);
           });
-        }*/
+        }
       },
       style: ElevatedButton.styleFrom(backgroundColor: Colors.blue[200]),
       child: const Text('Guardar'),

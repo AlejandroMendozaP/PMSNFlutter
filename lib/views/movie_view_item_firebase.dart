@@ -1,11 +1,9 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_2/database/movies_database.dart';
 import 'package:flutter_application_2/firebase/database_movies.dart';
 import 'package:flutter_application_2/models/moviesdao.dart';
-import 'package:flutter_application_2/settings/global_values.dart';
-import 'package:flutter_application_2/views/movie_view.dart';
+import 'package:flutter_application_2/views/movie_view_firebase.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
@@ -59,7 +57,7 @@ class _MovieViewItemFirebaseState extends State<MovieViewItemFirebase> {
                   context: context,
                   pageListBuilder: (context) => [
                     WoltModalSheetPage(
-                      child: MovieView(moviesDAO: widget.moviesDAO,)
+                      child: MovieViewFirebase(moviesDAO: widget.moviesDAO, Uid: widget.Uid)
                       )
                   ],
                 );

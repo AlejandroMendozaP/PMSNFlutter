@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_application_2/models/popular_cast.dart';
 import 'package:flutter_application_2/models/popular_moviedao.dart';
-import 'package:flutter_application_2/models/popular_trailerdao.dart';
 
 class PopularApi {
   final dio = Dio();
@@ -94,5 +93,26 @@ class PopularApi {
   return response.data['item_present'];
 }
 
+  Future<List<Map<String, dynamic>>> getMovieReviews(int movieId) async {
+    final response = await dio.get(
+      'https://api.themoviedb.org/3/movie/$movieId/reviews?language=en-US&page=1',
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1MDYzODZkNzZiMTY5MzcyNDdiNmYxMzU0YjU5NzY4OSIsIm5iZiI6MTczMDk0MzI5NS4zNTE2ODI3LCJzdWIiOiI2NmZlZDk1MDllYmVhMTkwMDZmN2U1ZWQiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.rkZjzWFsOPS72g1zYAl7xqtBTGGEf0FBtlMcl74N-xI',
+          'Accept': 'application/json',
+        },
+      ),
+    );
 
+    final results = response.data['results'] as List;
+
+    return results.map((review) {
+      return {
+        'author': review['author'],
+        'avatar_path': review['author_details']['avatar_path'],
+        'rating': review['author_details']['rating'],
+        'content': review['content'],
+      };
+    }).toList();
+  }
 }
